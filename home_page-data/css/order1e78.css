@@ -1,0 +1,32 @@
+.view_more{
+    display: inline-block;
+    background-color: #0291DD;
+    border: 1px solid #0291DD;
+    color: #fff;
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 5px;
+    padding: 10px 22px;
+    vertical-align: middle;
+    font-weight: 700;
+    text-align: center;
+    line-height: 18px;
+    letter-spacing: 0;
+    text-transform: none;
+    outline: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: "Roboto",sans-serif;
+    text-decoration: none !important;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+.view_more:hover{
+    color: #000;
+    background: #fff;
+}
+/*.mh{*/
+/*    max-height: 520px;*/
+/*    overflow: hidden;*/
+/*}*/

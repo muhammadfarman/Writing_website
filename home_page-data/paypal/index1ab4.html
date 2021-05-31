@@ -1,0 +1,38 @@
+
+
+
+		<center>
+	<p>Please wait, your order is being processed and you will be redirected to the PayPal website.</p>
+	<p>Click here if you're not automatically redirected...</p>
+	<!-- PayPal payment form for displaying the buy button -->
+	<form action="https://www.sandbox.paypal.com/cgi-bin/webscr" name="myForm" method="post" id="myForm">
+		<!-- Identify your business so that you can collect the payments. -->
+		<input type="hidden" name="business" value="errandsagency001@gmail.com">
+
+		<!-- Specify a Buy Now button. -->
+		<input type="hidden" name="cmd" value="_xclick">
+
+		<!-- Specify details about the item that buyers will purchase. -->
+		<input type="hidden" name="item_name" value="iscover to the most progressive thinking about organizations today as acclaimed author Richard Daft balances recent, innovative ideas with proven classic theories and effective business practices. Daft's best-selling ORGANIZATION THEORY AND DESIGN, 10E presents a captivating, compelling snapshot of contemporary organizations and the concepts driving their success that will immediately engage any reader. Recognized as one of the most systematic, well organized texts in the market, ORGANIZATION THEORY AND DESIGN helps both future and current managers thoroughly prepare for the challenges of today's business world. This thorough revision showcases some of today's most current examples and research alongside time-tested principles. Readers see how many of today's well-known organizations thrive amidst a rapidly changing, highly competitive, international environment. Proven and new learning features provide opportunities for readers to apply concepts and refine personal business skills and insights.">
+		<input type="hidden" name="item_number" value="18">
+		<input type="hidden" name="amount" value="16">
+		<input type="hidden" name="currency_code" value="USD">
+
+		<!-- Specify URLs -->
+		<input type="hidden" name="return" value="../books_admin/books/index.html">
+		<input type="hidden" name="cancel_return" value="cancel.html">
+
+		<!-- Display the payment button. -->
+		<input type="submit" value="submit" >
+	</form>
+	</center>
+
+			
+	
+		
+	
+	<script>
+	window.onload = function(){
+		document.forms["myForm"].submit();
+	}
+	</script>

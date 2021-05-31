@@ -1,0 +1,60 @@
+.col-md-3 {
+  margin-top: 10px;
+}
+.clr {
+  color: #0f3870;
+}
+.text-decoration {
+  text-decoration: none !important;
+}
+.card-container {
+  border-radius: 15px !important;
+  box-shadow: 1px 1px 32px 1px rgb(0 0 0 / 8%);
+}
+.step-holder img {
+  height: 40px;
+}
+.text {
+  margin-top: 30px;
+  color: black;
+}
+.follow {
+  position: absolute;
+  right: 50px;
+  bottom: 30px;
+  font-size: 15px;
+  text-decoration: underline;
+  display: flex;
+}
+.follow span {
+  font-weight: bold;
+}
+.d-flex {
+  display: flex;
+  justify-content: space-around;
+}
+.followers {
+  font-size: 15px;
+}
+.followers span {
+  text-align: right;
+  color: #0f3870;
+}
+.followers span.number {
+  font-size: 20px;
+  font-weight: bold;
+}
+.navbar {
+  transition: all 0.3s linear;
+}
+.header-wrappers {
+  z-index: 1200;
+  position: sticky !important;
+  width: 100%;
+  left: 0;
+  top: 0;
+}
+.card-display {
+  min-width: max-content;
+  margin-left: 5px;
+}

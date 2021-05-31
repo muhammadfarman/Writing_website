@@ -1,0 +1,7 @@
+.text_colapse {
+  height: 80px;
+  overflow: hidden;
+}
+.rslt.showContent .text_colapse {
+  height: auto;
+}

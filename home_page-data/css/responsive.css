@@ -1,0 +1,65 @@
+.grid-box {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-gap: 1px;
+  counter-reset: div;
+}
+
+
+.grid-box div:before {
+  counter-increment: div;
+}
+
+
+/* spanning cols, complete values missing */
+
+.col-box-1 {
+  grid-column: auto/span 1;
+}
+
+.col-box-2 {
+  grid-column: auto/span 2;
+}
+
+.col-box-3 {
+  grid-column: auto/span 3;
+}
+
+.col-box-4 {
+  grid-column: auto/span 4;
+}
+
+.col-box-5 {
+  grid-column: auto/span 5;
+}
+
+.col-box-6 {
+  grid-column: auto/span 6;
+}
+
+.col-box-7 {
+  grid-column: auto/span 7;
+}
+
+
+.col-box-8 {
+  grid-column: auto/span 8;
+}
+
+.col-box-9 {
+  grid-column: auto/span 9;
+}
+
+.col-box-10 {
+  grid-column: auto/span 10;
+}
+
+
+.col-box-11 {
+  grid-column: auto/span 11;
+}
+
+
+.col-box-12 {
+  grid-column: auto/span 12;
+}

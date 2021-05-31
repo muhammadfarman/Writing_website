@@ -1,0 +1,3666 @@
+
+<!DOCTYPE html>
+<html>
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+
+<head>
+	<title>Order an Essay - Writing Errands</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="icon" type="image/png" href="images/favicon-logo.png">
+	<meta name="theme-color" content="#ffffff">
+	<!-- css -->
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+	<link rel="stylesheet" type="text/css" href="css/q.css" />
+	<link rel="stylesheet" type="text/css" href="css/main.css" />
+	<link rel="stylesheet" type="text/css" href="style.css" />
+	<link rel="stylesheet" type="text/css" href="css/responsive.css">
+	<link rel="stylesheet" type="text/css" href="css/cropper_.html">
+	<script src="../cdn.ckeditor.com/4.7.0/full-all/ckeditor.js"></script>
+	<script src="js/jquery.js"></script>
+	<script src="js/bootstrap.js" defer="defer"></script>
+	<script src="js/form-plugin.js" defer="defer"></script>
+	<script src="js/q.js" defer="defer"></script>
+	<!-- <script src="./js/chat.js" defer="defer"></script> -->
+	<script src="js/autosize.js" defer="defer"></script>
+	<script src="js/uploder.js" defer="defer"></script>
+	<script src="js/cropper.js"></script>
+	<script>
+		$(function () {
+			detectMobile();
+			//announcementsScaling();
+			closeAnnouceMent();
+			costCalculator()
+			//proceedWithOrder();
+			starsPreview();
+			initP()
+			checkLoggedIn();
+			initDepo();
+			//uploadOderDocs(); function deleted
+			cookieRealTime();
+			search();
+			sidebarScrolling();
+			viewBids();
+		});
+
+		function sidebarScrolling() {
+			$(".sidebar-area").mouseenter(function () {
+				$(this).css("overflow-y", "scroll");
+			})
+			$(".sidebar-area").mouseleave(function () {
+				// make sure you scroll it up side
+				$(this).css("overflow-y", "hidden");
+			})
+		}
+
+		function checkLoggedIn() {
+			//console.log($.cookie("w-estate"));
+		}
+
+		function initDepo() {
+			$("#init-deposit").click(function () {
+				$amount = $("[name='d-amount']").val();
+				if ((parseInt($amount) < 2) || $amount == "") {
+					error("Amount must be at least USD 3", true);
+					return;
+				}
+				loading("Initializing Deposit Process... ", true)
+				$.ajax({
+					url: "actions.php",
+					data: getAjaxData(Array("action", "amount"), Array("initDeposit", $amount)),
+					type: "post",
+					cache: false,
+					success: function (data) {
+						console.log(data);
+						$("[name='amount']").val($amount);
+						$(".submit-paypal-form").trigger("click");
+					},
+					error: function () {
+						loading("", false);
+						error("Network error try again later", true);
+					}
+				});
+			});
+		}
+
+		function initP() {
+			$("body").on("click", ".initialize-paypal-payment", function () {
+				//alert("nice");
+				var id = $(this).attr('data-id');
+				loading("Initializing Payment...", true);
+				$.ajax({
+					url: "actions.php",
+					data: getAjaxData(Array("action", "orderId"), Array("initPayment", id)),
+					type: "post",
+					cache: false,
+					success: function (data) {
+						//loading("", false);
+						//console.log("payments ready to be made");
+						$("." + id + "").trigger("click");
+
+					},
+					error: function () {
+						loading("", false)
+						error("Network error while trying to initialize payment, please try again after solving your connections problems",
+							true);
+					}
+				});
+			});
+		}
+
+		function starsPreview() {
+			$("[name='r-stars']").change(function () {
+				var stars = $(this).val();
+				if (stars == "") {
+					$(".stars-priview").html("");
+					return;
+				}
+				var starsImage = "";
+				var start = 0;
+				while (start < parseInt(stars)) {
+					starsImage += "<div class='review-stars'><span class='ri ri-star'></span></div>";
+					start++;
+				}
+				var emptyStars = 5 - parseInt(stars);
+				var i = 0;
+				while (i < emptyStars) {
+					starsImage += "<div class='review-stars'><span class='ri ri-star-empty'></span></div>";
+					i++;
+				}
+				$(".stars-priview").html(starsImage);
+			});
+		}
+
+		function detectMobile() {
+			$(window).resize(function () {
+				var systemWidth = $(this).width();
+				//console.log(systemWidth);
+				if (systemWidth <= 974) {
+					$(".home-page-spacer").hide();
+					$(".sidebar-area").hide();
+					$(".mobile-sidebar").show();
+				} else {
+					$(".home-page-spacer").show();
+					$(".sidebar-area").show();
+					$(".mobile-sidebar").hide();
+				}
+			});
+			var width = $(window).width();
+			if (width <= 974) {
+				$(".home-page-spacer").hide();
+				$(".sidebar-area").hide();
+				$(".mobile-sidebar").show();
+			} else {
+				$(".mobile-sidebar").hide();
+				$(".home-page-spacer").show();
+				$(".sidebar-area").show();
+			}
+
+			function realTime() {
+				var time = 0;
+				setTimeout(realTime, 100);
+				if ($(".sidebar-area").is(":visible")) {
+					$(".close-sidebar").show();
+					$(".open-sidebar").hide();
+				} else {
+					$(".close-sidebar").hide();
+					$(".open-sidebar").show();
+				}
+				time++;
+			}
+			realTime();
+			$(".open-sidebar").click(function () {
+				$(".sidebar-area").removeClass("animated slideOutLeft");
+				$(".sidebar-area").fadeIn().addClass("animated slideInLeft");
+			});
+			$(".close-sidebar").click(function () {
+				$(".sidebar-area").removeClass("animated slideInLeft");
+				$(".sidebar-area").fadeOut().addClass("animated slideOutLeft");
+			});
+			// mobile notifications
+			$(window).resize(function () {
+				var systemWidth = $(this).width();
+				//console.log(systemWidth);
+				if (systemWidth <= 750) {
+					$("#mobile-notifications").show();
+				} else {
+					$("#mobile-notifications").hide();
+				}
+			});
+			var mobileTabletWidth = $(window).width();
+			if (mobileTabletWidth <= 750) {
+				$("#mobile-notifications").show();
+			} else {
+				$("#mobile-notifications").hide();
+			}
+		}
+
+		function announcementsScaling() {
+			var time = 0;
+
+			function realTime() {
+				setTimeout(realTime, 1000);
+				console.log("time is: " + time);
+				if (time == 2) {
+					if ($(".announcements").is(":visible")) {
+						$(".writing-estate-calculator").css("margin-top", "180px");
+						$(".writing-estate-front-hero h1").css("margin-top", "250px");
+					} else {
+						$(".writing-estate-calculator").css("margin-top", "100px");
+						$(".writing-estate-front-hero h1").css("margin-top", "200px");
+					}
+					time = 0;
+				}
+				time++;
+			}
+			realTime();
+		}
+
+		function closeAnnouceMent() {
+			$(".close-announcement").click(function () {
+				$(".announcements").slideUp();
+			});
+		}
+
+		function costCalculator() {
+			var urgentHours = $("#urgent-cpp").val();
+			var mUrgentHours = $("#m-urgent-cpp").val();
+			levelChange(urgentHours, mUrgentHours);
+			urgencyChange(urgentHours, mUrgentHours);
+			pagesChange(urgentHours, mUrgentHours);
+		}
+
+		function getNumberOfSlides() {
+			var slides = $("[name='calc-slides']").val();
+			if (slides == "") {
+				return 0;
+			}
+			return slides;
+		}
+
+		function getSlidesPrice() {
+			var slides = getNumberOfSlides();
+			var pricePerSlide = parseInt(slides) * parseFloat($("#slide-cost").val());
+			return pricePerSlide;
+		}
+
+		function showOpenExplainerLink() {
+			$(".explain-price-opner").fadeIn();
+		}
+
+		function hideOPenExplainerLink() {
+			$(".explain-price-opner").fadeOut();
+		}
+
+		function changeInputNumber(urgentHours, mUrgentHours) {
+			$("[name='calc-slides']").bind('keyup mouseup', function () {
+				var spaces = $(this).val();
+				var urgency = $("[name=\"cal-urgency\"]").val();
+				var pages = $("[name=\"calc-page-numbers\"]").val();
+				var level = $("[name='cal-level']").val();
+				if (level == "" || urgency == '0' || urgency == 0) {
+					$(".calc-total").html("0 USD");
+					//console.log(urgentHours+' '+mUrgentHours)
+					$("[name='calc-price']").val(0);
+				} else {
+					//showOpenExplainerLink();
+					if (parseInt(urgency) <= parseInt(urgentHours)) {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 0)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 0)));
+						console.log("urgent")
+					} else if ((parseInt(urgency) > parseInt(urgentHours)) && (parseInt(urgency) <= parseInt(
+							mUrgentHours))) {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 1)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 1)));
+					} else {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 2)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 2)));
+					}
+				}
+			});
+		}
+
+		function spacesChange(urgentHours, mUrgentHours) {
+			// new calc
+			// consider spaces
+			$("[name='cal-spaces']").change(function () {
+				var spaces = $(this).val();
+				var urgency = $("[name=\"cal-urgency\"]").val();
+				var pages = $("[name=\"calc-page-numbers\"]").val();
+				var level = $("[name='cal-level']").val();
+				if (level == "" || urgency == '0' || urgency == 0) {
+					$(".calc-total").html("0 USD");
+					//console.log(urgentHours+' '+mUrgentHours)
+					$("[name='calc-price']").val(0);
+					hideOPenExplainerLink();
+				} else {
+					//showOpenExplainerLink();
+					if (parseInt(urgency) <= parseInt(urgentHours)) {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 0)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 0)));
+						console.log("urgent")
+					} else if ((parseInt(urgency) > parseInt(urgentHours)) && (parseInt(urgency) <= parseInt(
+							mUrgentHours))) {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 1)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 1)));
+					} else {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 2)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 2)));
+					}
+				}
+			});
+		}
+
+		function levelChange(urgentHours, mUrgentHours) {
+			spacesChange(urgentHours, mUrgentHours);
+			changeInputNumber(urgentHours, mUrgentHours);
+			// prices
+			$("[name='cal-level']").change(function () {
+				var level = $(this).val();
+				var urgency = $("[name=\"cal-urgency\"]").val();
+				var pages = $("[name=\"calc-page-numbers\"]").val();
+				//console.log(level+' '+urgency+' '+pages);
+				if (level == "" || urgency == '0' || urgency == 0) {
+					$(".calc-total").html("0 USD");
+					//console.log(urgentHours+' '+mUrgentHours)
+					$("[name='calc-price']").val(0);
+					hideOPenExplainerLink();
+				} else {
+					//showOpenExplainerLink();
+					if (parseInt(urgency) <= parseInt(urgentHours)) {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 0)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 0)));
+						console.log("urgent")
+					} else if ((parseInt(urgency) > parseInt(urgentHours)) && (parseInt(urgency) <= parseInt(
+							mUrgentHours))) {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 1)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 1)));
+					} else {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 2)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 2)));
+					}
+				}
+			});
+			$("[name='cal-urgency']").change(function () {
+				var level = $("[name='cal-level']").val();
+				var urgency = $("[name=\"cal-urgency\"]").val();
+				var pages = $("[name=\"calc-page-numbers\"]").val();
+				//console.log(level+' '+urgency+' '+pages);
+				if (level == "" || urgency == '0' || urgency == 0) {
+					$(".calc-total").html("0 USD");
+					//console.log(urgentHours+' '+mUrgentHours)
+					$("[name='calc-price']").val(0);
+					hideOPenExplainerLink();
+				} else {
+					//showOpenExplainerLink();
+					if (parseInt(urgency) <= parseInt(urgentHours)) {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 0)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 0)));
+					} else if ((parseInt(urgency) > parseInt(urgentHours)) && (parseInt(urgency) <= parseInt(
+							mUrgentHours))) {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 1)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 1)));
+					} else {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 2)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 2)));
+					}
+				}
+			});
+			$("[name='calc-page-numbers']").change(function () {
+				var level = $("[name='cal-level']").val();
+				var urgency = $("[name=\"cal-urgency\"]").val();
+				var pages = $("[name=\"calc-page-numbers\"]").val();
+				//console.log(level+' '+urgency+' '+pages);
+				if (level == "" || urgency == '0' || urgency == 0) {
+					$(".calc-total").html("0 USD");
+					//console.log(urgentHours+' '+mUrgentHours)
+					$("[name='calc-price']").val(0);
+					hideOPenExplainerLink();
+				} else {
+					//showOpenExplainerLink();
+					if (parseInt(urgency) <= parseInt(urgentHours)) {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 0)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 0)));
+					} else if ((parseInt(urgency) > parseInt(urgentHours)) && (parseInt(urgency) <= parseInt(
+							mUrgentHours))) {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 1)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 1)));
+					} else {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 2)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 2)));
+					}
+				}
+			});
+		}
+
+		function urgencyChange(urgentHours, mUrgentHours) {
+			// prices
+			$("#cal-level").change(function () {});
+		}
+
+		function pagesChange(urgentHours, mUrgentHours) {
+			// prices
+			$("#p").change(function () {});
+		}
+
+		function explainPrice(supposedPrice, priceAfterDiscount, offer, slides, slidePrice, spacing) {
+			if (priceAfterDiscount == "0") {
+				error("Please calculate your price first. System will explain your price", true);
+				$(".price-explainer-display").html(
+					"<div class='alert alert-danger'>Please calculate your price using the price calculator and the system is going to explain that price for you</div>"
+					);
+
+			} else {
+				var data = "<div class='explain-price'>";
+				data += "<span class='price-explain-meta-data'>Usual Price: <span><s>$" + supposedPrice +
+				"</s></span></span>";
+				data += "<span class='price-explain-meta-data'>Price After Discount: <span>$" + priceAfterDiscount +
+					"</span></span>";
+				data += "<span class='price-explain-meta-data'>Discount: <span>" + offer + "% off</span></span>";
+				data += "<span class='price-explain-meta-data'>Number of Slides: <span>" + slides + "</span></span>";
+				data += "<span class='price-explain-meta-data'>Slide Pirce each @ $" + $("#slide-cost").val() + ": <span>$" +
+					slidePrice + "</span></span>";
+				data += "<span class='price-explain-meta-data'>Spacing<span>" + spacing + "</span></span>";
+				data += "<span class='mathematical-equal'></span>";
+				data += "<span class='price-explain-meta-data-total'>What to Pay: <span>$" + priceAfterDiscount +
+					"</span></span>";
+				data += "<span class='mathematical-equal'></span>";
+				data += "</div>";
+				$(".price-explainer-display").html(data);
+			}
+		}
+
+		function getCalculatedPrice(level, pages, status) {
+			var price;
+			var spaces = $("[name='cal-spaces']").val();
+			var slidePrice = getSlidesPrice();
+			//alert(slidePrice);
+			if (status == 0) {
+				// urgent price
+				if (level == "High School") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#hu").val()) * parseInt(pages)) + slidePrice;
+					} else {
+						price = (parseFloat($("#hu").val()) * parseInt(pages) * 2) + slidePrice;
+					}
+				} else if (level == "College") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#cu").val()) * parseInt(pages)) + slidePrice;
+					} else {
+						price = (parseFloat($("#cu").val()) * parseInt(pages) * 2) + slidePrice;
+					}
+				} else if (level == "Undergraduate") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#cu").val()) * parseInt(pages)) + slidePrice;
+					} else {
+						price = (parseFloat($("#cu").val()) * parseInt(pages) * 2) + slidePrice;
+					}
+				} else if (level == "Masters") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#mu").val()) * parseInt(pages)) + slidePrice;
+					} else {
+						price = (parseFloat($("#mu").val()) * parseInt(pages) * 2) + slidePrice;
+					}
+				} else if (level == "PHD") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#pu").val()) * parseInt(pages)) + slidePrice;
+					} else {
+						price = (parseFloat($("#pu").val()) * parseInt(pages) * 2) + slidePrice;
+					}
+				}
+			} else if (status == 1) {
+				// murgent price
+				if (level == "High School") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#hm").val()) * parseInt(pages)) + slidePrice;
+					} else {
+						price = (parseFloat($("#hm").val()) * parseInt(pages) * 2) + slidePrice;
+					}
+				} else if (level == "College") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#cm").val()) * parseInt(pages)) + slidePrice;
+					} else {
+						price = (parseFloat($("#cm").val()) * parseInt(pages) * 2) + slidePrice;
+					}
+				} else if (level == "Undergraduate") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#cm").val()) * parseInt(pages)) + slidePrice;
+					} else {
+						price = (parseFloat($("#cm").val()) * parseInt(pages) * 2) + slidePrice;
+					}
+				} else if (level == "Masters") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#mm").val()) * parseInt(pages)) + slidePrice;
+					} else {
+						price = (parseFloat($("#mm").val()) * parseInt(pages) * 2) + slidePrice;
+					}
+				} else if (level == "PHD") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#pm").val()) * parseInt(pages)) + slidePrice;
+					} else {
+						price = (parseFloat($("#pm").val()) * parseInt(pages) * 2) + slidePrice;
+					}
+				}
+			} else if (status == 2) {
+				// normal price
+				if (level == "High School") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#hn").val()) * parseInt(pages)) + slidePrice;
+					} else {
+						price = (parseFloat($("#hn").val()) * parseInt(pages) * 2) + slidePrice;
+					}
+				} else if (level == "College") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#cn").val()) * parseInt(pages)) + slidePrice;
+					} else {
+						price = (parseFloat($("#cn").val()) * parseInt(pages) * 2) + slidePrice;
+					}
+				} else if (level == "Undergraduate") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#cn").val()) * parseInt(pages)) + slidePrice;
+					} else {
+						price = (parseFloat($("#cn").val()) * parseInt(pages) * 2) + slidePrice;
+					}
+				} else if (level == "Masters") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#mn").val()) * parseInt(pages)) + slidePrice;;
+					} else {
+						price = (parseFloat($("#mn").val()) * parseInt(pages) * 2) + slidePrice;
+					}
+				} else if (level == "PHD") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#pn").val()) * parseInt(pages)) + slidePrice;
+					} else {
+						price = (parseFloat($("#pn").val()) * parseInt(pages) * 2) + slidePrice;;
+					}
+				}
+			}
+			showOpenExplainerLink();
+			explainPrice(truncateDecimals(price, 2), truncateDecimals(getPriceWithDiscount(price), 2), getDiscountOff(),
+				getNumberOfSlides(), truncateDecimals(getSlidesPrice(), 2), spaces);
+			//alert( truncateDecimals(55.55555, 2) )
+			return truncateDecimals(price, 2);
+		}
+		truncateDecimals = function (number, digits) {
+			var multiplier = Math.pow(10, digits),
+				adjustedNum = number * multiplier,
+				truncatedNum = Math[adjustedNum < 0 ? 'ceil' : 'floor'](adjustedNum);
+			return truncatedNum / multiplier;
+		};
+
+		function getDiscountOff() {
+			return parseInt($("#off-discount").val());
+		}
+
+		function getPriceWithDiscount(price) {
+			var off = getDiscountOff();
+			if (off == 0) {
+				return price;
+			}
+			var theDiscount = (off / 100) * price;
+			var finalPrice = price - theDiscount;
+			return truncateDecimals(finalPrice, 2);
+		}
+
+		function getTheDisplayPrice(price) {
+			var off = getDiscountOff();
+			if (off == 0) {
+				return "USD " + price;
+			} else {
+				return "<s style='color: red;'><span style='color: red;'><i>$" + price + "</i></span></s> $" +
+					getPriceWithDiscount(price) + " (" + off + "% Off)";
+			}
+
+		}
+
+		function loading(text, itShouldShow) {
+			if (itShouldShow) {
+				$("#loading").dialog("show").find("h3").html(text);
+			} else {
+				$("#loading").dialog("hide");
+			}
+		}
+
+		function success(text, itShouldShow) {
+			if (itShouldShow) {
+				$("#succcess").dialog("open").find("h3").html(text);
+			} else {
+				$("#succcess").dialog("close");
+			}
+		}
+
+		function error(text, itShouldShow) {
+			if (itShouldShow) {
+				$("#error").dialog("open").find("h3").html(text);
+			} else {
+				$("#error").dialog("close");
+			}
+		}
+
+		function getAjaxData(params, data) {
+			var dataToPass = "";
+			for (i = 0; i < params.length; i++) {
+				var totalCount = i + 1;
+				if (totalCount == params.length) {
+					dataToPass += params[i] + "=" + data[i];
+				} else {
+					dataToPass += params[i] + "=" + data[i] + "&";
+				}
+				//console.log(params[i]);
+			}
+			//console.log(dataToPass);
+			return dataToPass;
+		}
+
+		function cookieRealTime() {
+			$(window).on("focus", function () {
+				$.ajax({
+					url: "actions.php",
+					data: getAjaxData(Array("action"), Array("check-loggedin-in")),
+					type: "post",
+					cache: false,
+					success: function (data) {
+						var isLoggedIn = $("#is-logged-in").val();
+						if (data == 1 || data == "1") {
+							if (isLoggedIn == 0 || isLoggedIn == "0") {
+								loading("You just logged in from another tab. We are redirecting...",
+									true);
+								location.reload();
+							}
+							return;
+						}
+						if (data == 0 || data == "0") {
+							if (isLoggedIn == 1 || isLoggedIn == "1") {
+								loading("You logout from another tab. We are redirecting...", true);
+								location.reload();
+							}
+						}
+					},
+					error: function () {}
+				});
+			});
+			$(window).blur(function () {
+
+			})
+		}
+
+		function search() {
+			$("[name='s-order-id']").keyup(function () {
+				var dataToPass = $(this).val();
+				$.ajax({
+					url: "actions.php",
+					type: "post",
+					data: getAjaxData(Array("action", "data"), Array("search-orders", dataToPass)),
+					cache: false,
+					success: function (data) {
+						if (data == 555) {
+							loading("Something not right, we are refreshing...", true);
+							location.relaod();
+							return;
+						}
+						$(".search-results").html(data);
+						console.log("returned data is: " + data);
+					},
+					error: function () {
+						$(".search-results").html("<div class='alert alert-danger'>Network error!</div>")
+					}
+				});
+			});
+		}
+
+		function viewBids() {
+			// alert("programming is fine")
+			$(".view-bids-details").click(function () {
+				var orderId = $(this).attr("data-id");
+				loading("Please Wait", true);
+				$.ajax({
+					url: "actions.php",
+					type: "post",
+					data: getAjaxData(Array("action", "orderId"), Array("loadAdminBidsForThisOrder",
+						orderId)),
+					async: true,
+					cache: false,
+					success: function (data) {
+						loading("", false);
+						$(".bids-display-data").html(data);
+					},
+					error: function () {
+						loading("", false);
+						error("Something not right please check your internet connection", true);
+					}
+				});
+			});
+		}
+	</script>
+	<script>
+		$(function () {
+			// detect safari browswer and disable animations
+			if (!is_safari()) {
+				$("head").append('<link rel="stylesheet" type="text/css" href="css/animate.css" />');
+			}
+		});
+
+		function is_safari() {
+			var ua = navigator.userAgent.toLowerCase();
+			if (ua.indexOf('safari') != -1) {
+				if (ua.indexOf('chrome') > -1) {
+					return false;
+				} else {
+					return true; //Safari
+				}
+			}
+		}
+	</script>
+
+	<style type="text/css">
+		.dynamic-order {
+			background: #015079;
+			color: #fff;
+			border-radius: 5px;
+			min-height: 100px;
+			padding: 35px 10px;
+			-webkit-box-shadow: 0 0 10px #000;
+			box-shadow: 0 0 10px #000;
+		}
+
+		.dynamic-order small {
+			color: #ededed;
+		}
+
+		.dynamic-order .dynamic-order-1,
+		.dynamic-order .dynamic-order-2 {
+			display: none;
+		}
+
+		.dynamic-order .dynamic-order-start h3 {
+			margin-bottom: 20px;
+		}
+
+		.dynamic-order .dynamic-order-start span {
+			display: block;
+			text-align: center;
+			font-size: 17px;
+			padding: 10px 25px;
+			cursor: pointer;
+			-web-kit-user-select: none;
+			-moz-user-select: none;
+			-o-user-select: none;
+			user-select: none;
+			border-radius: 3px;
+		}
+
+		.dynamic-order .dynamic-order-start span.d-writing-service {
+			background: #0190EF;
+			margin-bottom: 15px;
+		}
+
+		.dynamic-order .dynamic-order-start span.d-other-services {
+			background: #B50000;
+		}
+
+		.back-to-services-options-btn {
+			padding: 7px 20px;
+			border: 1px solid #E1E1E1;
+			border-radius: 3px;
+			display: inline-block;
+			margin-bottom: 15px;
+			cursor: pointer;
+			user-select: none;
+		}
+
+		.writing-estate-calculator {
+			background: #0291f087;
+		}
+	</style>
+	<script type="text/javascript">
+		$(function () {
+			$("body").on("click", ".d-writing-service, .d-other-services, .back-to-services-options-btn",
+		function () {
+				// design for the other services
+				if ($(this).attr("class") == "d-other-services") {
+					$(this).parent().hide().removeClass("animated fadeInDownBig");
+					$(".dynamic-order-2").fadeIn().addClass("animated ");
+					return;
+				}
+				// getting back
+				if ($(this).attr("class") == "back-to-services-options-btn") {
+					$(".dynamic-order-1").hide().removeClass("animated ");
+					$(".dynamic-order-2").hide().removeClass("animated ");
+					$(".dynamic-order-start").fadeIn().addClass("animated fadeInDownBig");
+					return;
+				}
+				$(this).parent().hide().removeClass("animated fadeInDownBig");
+				$(".dynamic-order-1").fadeIn().addClass("animated ");
+				// design for writing services
+			});
+
+			proceedWithOrder();
+		});
+
+
+		function proceedWithOrder() {
+
+			$("[name='cal-urgency'], [name='cal-level'], [name='calc-page-numbers']").click(function () {
+				$(".form-response").hide();
+			});
+			$("#complete-order").click(function () {
+				var level = $("[name='cal-level']").val();
+				var urgency = $("[name='cal-urgency']").val();
+				var pages = $("[name='calc-page-numbers']").val();
+				var topic = $("[name='o-topic']").val();
+				var reference = $("[name='o-ref']").val();
+				var style = $("[name='o-style']").val();
+				var language = $("[name='o-language']").val();
+				var description = $("[name='o-description']").val();
+				var doc = $("#o-doc").val();
+				var files = $(".uploader-value-them-all").val();
+				var fileType = $("#what-uploading").val();
+				var w = $("#the-hiring-writer").val();
+				var writer;
+
+				if (w == "") {
+					writer = 0;
+				} else {
+					writer = w;
+				}
+				//alert(files);
+				//alert(language);
+				//return;
+				if (topic == "" || reference == "" || style == "" || language == "" || description == "") {
+					error("Fill in all the fields", true);
+					return;
+				}
+				if (topic.length < 5) {
+					error("Your topic is way too short", true);
+					return;
+				}
+				loading("Processing...", true);
+				var params = Array("action", "level", "urgency", "pages", "topic", "reference", "style", "language",
+					"description", "price", "files", "fileType", "writer");
+				var dataToPass = Array("addToCart", level, urgency, pages, topic, reference, style, language,
+					description, $("[name='calc-price']").val(), files, fileType, writer);
+				$.ajax({
+					url: "actions.php",
+					type: "post",
+					data: getAjaxData(params, dataToPass),
+					async: true,
+					cache: false,
+					success: function (data) {
+						loading("", false);
+						//alert(data)
+						console.log(data);
+						window.location.href = "login51ca.html?action=determineDirectionAferAddingToCart";
+					},
+					error: function () {
+						loading("", false);
+						error("Network error, please try again later", true);
+					}
+				})
+			});
+		}
+	</script>
+
+	<script>
+		$(function () {
+			getFiles();
+			init_rating();
+			clear_files();
+		});
+
+		function clear_files() {
+			$("body").on("click", ".clear-all-files-data", function (e) {
+				if (e) e.preventDefault();
+				var dataClear = $(this).attr("data-clear");
+				$("." + dataClear).html("").hide();
+				$("#what-uploading").val("");
+				$(".uploader-value-them-all").val("");
+				$(".uploader-files-preview").html("");
+				$(".preview-centered").show();
+			});
+		}
+
+		function init_rating() {
+			$("body").on('click', '.rating-init', function () {
+				var id = $(this).attr("data-id");
+				$("#rating-manager-order-id").val(id);
+			});
+			$("body").on('click', "#rate-user-btn", function () {
+				var orderId = $("#rating-manager-order-id").val();
+				var ratingStars = $("[name='rating-stars']").val();
+				var message = $("[name='rating-message']").val();
+				$("#loading").dialog("show").find("h3").html("Please Wait...");
+				$.ajax({
+					url: "actions.php",
+					type: "post",
+					data: {
+						action: "rate_writer",
+						orderId: orderId,
+						stars: ratingStars,
+						message: message
+					},
+					async: true,
+					cache: false,
+					success: function (data) {
+						//$("#loading").dialog('hide');
+						//alert(data);
+						location.reload();
+					},
+					error: function () {
+						$("#loading").dialog('hide');
+						alert(
+							"Network error, please confirm if you're connected to the internet and try again later");
+					}
+				})
+			});
+		}
+
+		function getFiles() {
+			$("body").on("click", ".view-all-system-files", function (event) {
+				if (event) event.preventDefault();
+
+				var fileType = $(this).attr('file-type');
+				var orderId = $(this).attr('data-id')
+				//alert(fileType+" "+orderId)
+				$("#loading").dialog("show").find("h3").html("Please Wait...");
+				$.ajax({
+					url: "actions.php",
+					type: "post",
+					data: "action=viewSystemFiles&type=" + fileType + "&orderId=" + orderId,
+					async: true,
+					cache: false,
+					success: function (data) {
+						$("#loading").dialog("hide");
+						$("#file-downloader-dialog-data").dialog("open").find(".download-file-didalog")
+							.html(data);
+					},
+					error: function () {
+						$("#loading").dialog("hide");
+						$("#error").dialog("open").find("h3").html(
+							"Please confirm if your network is owkring properly");
+					}
+				});
+			});
+		}
+	</script>
+	<script type="text/javascript">
+		$(function () {
+			//alert(10)
+			//loadingThis("dafd")
+			createTest();
+			//error("sasa")
+		});
+
+		function createTest() {
+			$("#create-a-test").click(function () {
+				var type = $("[name='test-type']").val();
+				var name = $("[name='test-name']").val();
+				var passMark = $("[name='test-pass-mark']").val();
+				var compulsory = $("[name='test-compulsory']").val();
+				var duration = $("[name='test-duration']").val();
+				if (isEmpty(type) || isEmpty(name) || isEmpty(passMark) || isEmpty(compulsory) || isEmpty(duration)) {
+					//$("#error").dialog("open").find("h3").html("Error please make sure you fill in all the fields");
+					errorThis("Error please make sure you fill in all the fields");
+					return;
+				}
+				loadingThis("Please Wait...");
+				$.ajax({
+					url: "actions.php",
+					data: "action=addNewTest&type=" + type + "&name=" + name + "&passMark=" + passMark +
+						"&compulsory=" + compulsory + "&duration=" + duration,
+					type: "post",
+					async: true,
+					cache: false,
+					success: function (data) {
+						//alert(data);
+						loadingThis("", false);
+						$("[name='test-type']").val("");
+						$("[name='test-name']").val("");
+						$("[name='test-pass-mark']").val("");
+						$("[name='test-compulsory']").val("");
+						$("[name='test-duration']").val("");
+						if (data == 2 || data == "2") {
+							errorThis(
+								"You cannot create more than one essay question, but you cah have multiple multi-choice questions"
+								);
+							return;
+						}
+						loadTests();
+					},
+					error: function () {
+						loadingThis("", false);
+						error("Error, please check your internet connections and try again later");
+					}
+				});
+			});
+		}
+
+		function loadTests() {
+			loadingThis("loading Tests");
+			$.ajax({
+				url: "actions.php",
+				data: "action=loadAllTests",
+				type: "post",
+				async: true,
+				cache: false,
+				success: function (data) {
+					//alert(data)
+					loadingThis("", false);
+					$(".tests-display").html(data);
+					$("#create-new-test").dialog("close");
+				},
+				error: function () {
+					loadingThis("", false);
+					$("#error").dialog("open").find("h3").html(
+						"Error, please check your internet connections and try again later");
+				}
+			});
+		}
+
+		function isEmpty(str) {
+			if (str.replace(/\s/g, "") == "") {
+				return true;
+			}
+			return false;
+		}
+
+		function loadingThis(message, itShouldShow = true) {
+			if (itShouldShow) {
+				$("#loading").dialog("show").find("h3").html(message);
+			} else {
+				$("#loading").dialog("hide");
+			}
+		}
+
+		function errorThis(message) {
+			//alert(message)
+			$("#error").dialog("open").find("h3").html(message);
+		}
+	</script>
+	<!-- CSS -->
+	<style type="text/css">
+		.quiz-correct-answer {
+			font-weight: bold;
+		}
+
+		.quiz-correct-answer small {
+			color: green;
+			display: inline-block;
+			margin-left: 7px;
+		}
+
+		.writer-more-detail-row {
+			padding: 5px;
+			border: 1px solid #E1E1E1;
+			margin: 3px;
+			border-radius: 2px;
+		}
+
+		.writer-more-detail-title {
+			font-weight: 700;
+		}
+
+		.user-rating-number {
+			background: #F77D0E;
+			display: inline-block;
+			padding: 0px 4px;
+			color: #fff;
+			-webkit-box-align: center;
+			align-items: center;
+			-webkit-box-pack: center;
+			border-radius: 3px;
+			justify-content: center;
+			margin-right: 5px;
+		}
+
+		.user-rating-number-0 {
+			background: #BEC0C2;
+			display: inline-block;
+			padding: 0px 4px;
+			color: #fff;
+			-webkit-box-align: center;
+			align-items: center;
+			-webkit-box-pack: center;
+			border-radius: 3px;
+			justify-content: center;
+			margin-right: 5px;
+		}
+
+		.user-rating-star {
+			display: inline-block;
+			margin: 0 3px 0 0;
+		}
+
+		span.half-rating {
+			font-size: 78px;
+			position: relative;
+			color: rgba(50, 50, 200, 0.5);
+		}
+
+		span.half-rating:before {
+			content: attr(data-char);
+			position: absolute;
+			width: 50%;
+			overflow: hidden;
+			color: rgb(50, 50, 200);
+		}
+
+		.load-essay-data {
+			font-size: 15px;
+			padding: 18px;
+			position: relative;
+			border: 1px solid #E1E1E1;
+			background: white;
+			-webkit-background-size: 100% 30px;
+			-moz-background-size: 100% 30px;
+			-ms-background-size: 100% 30px;
+			background-size: 100% 30px;
+			-webkit-box-shadow: 0 0 3px #1B2431;
+			box-shadow: 0 0 3px #1B2431;
+			border-radius: 5px;
+		}
+
+		.paper::before {
+			content: "";
+			z-index: -1;
+			margin: 0 1px;
+			width: 706px;
+			height: 10px;
+			position: absolute;
+			bottom: -3px;
+			left: 0;
+			background: white;
+			border: 1px solid #B5B5B5;
+		}
+
+		.paper::after {
+			content: '';
+			position: absolute;
+			width: 0px;
+			top: 0;
+			left: 39px;
+			bottom: 0;
+			border-left: 1px solid #F8D3D3;
+		}
+
+		.notif-must {
+			background: white;
+			padding: 10px;
+			border-radius: 3px;
+			margin-bottom: 20px;
+			padding: 20px;
+			border-left: 5px solid #D55049;
+			font-size: 15px;
+		}
+
+		.notif-must .col-md-1 span {
+			font-size: 50px;
+			font-weight: 700;
+		}
+
+		.fine-amount {
+			color: red;
+			font-weight: 700;
+		}
+
+		@keyframes up-right {
+			0% {
+				transform: scale(1);
+				opacity: .25
+			}
+
+			50% {
+				transform: scale (1, 5);
+				opacity: 1;
+			}
+
+			100% {
+				transform: scale(1);
+				opacity: .25;
+			}
+		}
+
+		.circle {
+			border-radius: 50%;
+			width: 20px;
+			height: 20px;
+			opacity: .25;
+			display: inline-block;
+		}
+
+		.red {
+			background-color: red;
+			#position: absolute;
+			top: 50%;
+			left: 50%;
+			-webkit-animation: up-right 1s infinite;
+			-moz-animation: up-right 1s infinite;
+			-o-animation: up-right 1s infinite;
+			animation: up-right 1s infinite;
+		}
+
+		/* WRITERS MESSAGES */
+
+		.chats {
+			padding: 20px;
+		}
+
+		.writer-threads-holder {
+			height: 400px;
+			overflow-y: hidden;
+		}
+
+		.writer-threads-holder:hover {
+			overflow-y: scroll;
+		}
+
+		.thread-list,
+		.thread-list-notifications {
+			padding: 10px;
+			background: #F0F0F0;
+			cursor: pointer;
+			margin-bottom: 2px;
+			border-left: 5px solid transparent;
+		}
+
+		.thread-list.active,
+		.thread-list:hover,
+		.thread-list-notifications:hover {
+			border-left: 5px solid #27C3F3;
+			background: #2F4455;
+			color: #FFF;
+		}
+
+		.thread-list .thread-name {
+			font-weight: 700;
+		}
+
+		.thread-list a {
+			color: #F2711D !important;
+		}
+
+		.writers-chat-room {
+			border-left: 1px solid #CCC;
+			border-top: 1px solid #CCC;
+		}
+
+		.writers-chat-room-messages {
+			height: 350px;
+			padding: 10px;
+			overflow-y: scroll;
+		}
+
+		.new-messages-count {
+			background: #D40000;
+			padding: 5px;
+			color: #fff;
+			font-weight: 700;
+			border-radius: 4px;
+			display: none;
+		}
+
+		#success {
+			z-index: 999999999999999;
+		}
+
+		/* ENDING WRITERS MESSAGES */
+
+
+
+		.coupon-code-holder {
+			-webkit-box-shadow: 0 0 5px gray;
+			box-shadow: 0 0 5px gray;
+			padding: 10px;
+			border-radius: 3px;
+			margin-bottom: 10px;
+		}
+
+		.coupon-code-toggle {
+			text-align: center;
+			font-weight: 700;
+			padding: 10px 0;
+			cursor: pointer;
+		}
+
+		.coupon-code-response {
+			padding-top: 5px;
+		}
+
+		.coupon-code-input {
+			display: none;
+		}
+
+		.coupon-code-response {
+			display: none;
+		}
+
+		.best-writers {
+			padding: 30px 0;
+			background: rgba(34, 193, 195);
+			background: linear-gradient(90deg, rgba(34, 193, 195, 1) 0%, rgba(253, 187, 45, 1) 70%);
+			#background: rgb(2, 0, 36);
+			#background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(9, 9, 121, 1) 35%, rgba(0, 212, 255, 1) 100%);
+			color: #1B2431 !important;
+		}
+
+
+
+		.best-writers h2 {
+			text-align: center;
+			color: #fff;
+			font-size: 25px;
+			margin-bottom: 30px;
+		}
+
+		.card-display {
+			background-color: #fff;
+			box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.15);
+			border-radius: 7px;
+			padding: 15px 20px;
+			min-height: 200px;
+			margin: 0 40px 40px 0;
+			color: #1B2431 !important;
+		}
+
+		.card-display .profile-meta-data {
+			border-bottom: 1px solid #CCC;
+			padding-bottom: 10px;
+		}
+
+		.card-display .profile-meta-data img {
+			max-height: 80px;
+			border-radius: 50%;
+			margin-right: 20px;
+			border: 2px solid rgb(2, 0, 36);
+		}
+
+		.orders-done-meta-data {
+			padding: 10px 0 10px 0;
+
+		}
+
+		.orders-done-meta-data span {
+			display: block;
+			padding-bottom: 10px;
+		}
+
+		.hire-meta-data {
+			padding: 10px 0;
+		}
+
+		.hire-special-btn {
+			display: inline-block;
+			background-color: #ededed;
+			border: 1px solid #ededed;
+			color: #0000;
+			-webkit-transition: .4s;
+			transition: .4s;
+			border-radius: 5px;
+			padding: 10px 22px;
+			vertical-align: middle;
+			font-weight: 700;
+			text-align: center;
+			line-height: 18px;
+			letter-spacing: 0;
+			text-transform: none;
+			outline: none;
+			cursor: pointer;
+			font-size: 14px;
+			font-family: "Roboto", sans-serif;
+			text-decoration: none !important;
+			-webkit-appearance: none;
+			-moz-appearance: none;
+			appearance: none;
+		}
+
+		.hire-special-btn:hover {
+			background: #000;
+			color: #fff;
+			border: 1px solid transparent;
+		}
+
+		.my-btn {
+			background-color: #0291DD;
+			color: #ededed;
+			font-family: "Roboto", sans-serif;
+			cursor: pointer;
+			font-size: 14px;
+			transition: .4s;
+			border-radius: 5px;
+			padding: 10px 22px;
+			font-weight: 700;
+			text-align: center;
+			line-height: 18px;
+			letter-spacing: 0;
+			text-transform: none;
+			outline: none;
+			text-decoration: none !important;
+		}
+
+		.my-btn:hover {
+			background-color: #ededed;
+			color: #000;
+
+		}
+
+		.collopsible-meta-data {
+			display: none;
+		}
+
+		.quiz-correct-answer {
+			font-weight: bold;
+		}
+
+		.quiz-correct-answer small {
+			color: green;
+			display: inline-block;
+			margin-left: 7px;
+		}
+
+		.writer-more-detail-row {
+			padding: 5px;
+			border: 1px solid #E1E1E1;
+			margin: 3px;
+			border-radius: 2px;
+		}
+
+		.writer-more-detail-title {
+			font-weight: 700;
+		}
+
+		.user-rating-number {
+			background: #F77D0E;
+			display: inline-block;
+			padding: 0px 4px;
+			color: #fff;
+			-webkit-box-align: center;
+			align-items: center;
+			-webkit-box-pack: center;
+			border-radius: 3px;
+			justify-content: center;
+			margin-right: 5px;
+		}
+
+		.user-rating-number-0 {
+			background: #BEC0C2;
+			display: inline-block;
+			padding: 0px 4px;
+			color: #fff;
+			-webkit-box-align: center;
+			align-items: center;
+			-webkit-box-pack: center;
+			border-radius: 3px;
+			justify-content: center;
+			margin-right: 5px;
+		}
+
+		.user-rating-star {
+			display: inline-block;
+			margin: 0 3px 0 0;
+		}
+
+		span.half-rating {
+			font-size: 78px;
+			position: relative;
+			color: rgba(50, 50, 200, 0.5);
+		}
+
+		span.half-rating:before {
+			content: attr(data-char);
+			position: absolute;
+			width: 50%;
+			overflow: hidden;
+			color: rgb(50, 50, 200);
+		}
+
+		.load-essay-data {
+			font-size: 15px;
+			padding: 18px;
+			position: relative;
+			border: 1px solid #E1E1E1;
+			background: white;
+			-webkit-background-size: 100% 30px;
+			-moz-background-size: 100% 30px;
+			-ms-background-size: 100% 30px;
+			background-size: 100% 30px;
+			-webkit-box-shadow: 0 0 3px #1B2431;
+			box-shadow: 0 0 3px #1B2431;
+			border-radius: 5px;
+		}
+
+		.paper::before {
+			content: "";
+			z-index: -1;
+			margin: 0 1px;
+			width: 706px;
+			height: 10px;
+			position: absolute;
+			bottom: -3px;
+			left: 0;
+			background: white;
+			border: 1px solid #B5B5B5;
+		}
+
+		.paper::after {
+			content: '';
+			position: absolute;
+			width: 0px;
+			top: 0;
+			left: 39px;
+			bottom: 0;
+			border-left: 1px solid #F8D3D3;
+		}
+
+		.notif-must {
+			background: white;
+			padding: 10px;
+			border-radius: 3px;
+			margin-bottom: 20px;
+			padding: 20px;
+			border-left: 5px solid #D55049;
+			border-top: 1px solid #ccc;
+			border-right: 1px solid #ccc;
+			border-bottom: 1px solid #ccc;
+			font-size: 15px;
+		}
+
+		.notif-must .col-md-1 span {
+			font-size: 50px;
+			font-weight: 700;
+		}
+
+		.fine-amount {
+			color: red;
+			font-weight: 700;
+		}
+
+		@keyframes up-right {
+			0% {
+				transform: scale(1);
+				opacity: .25
+			}
+
+			50% {
+				transform: scale (1, 5);
+				opacity: 1;
+			}
+
+			100% {
+				transform: scale(1);
+				opacity: .25;
+			}
+		}
+
+		.circle {
+			border-radius: 50%;
+			width: 20px;
+			height: 20px;
+			opacity: .25;
+			display: inline-block;
+		}
+
+		.red {
+			background-color: red;
+			-webkit-box-shadow: 0 0 20px #F7B21A;
+			box-shadow: 0 0 20px #F7B21A;
+			#position: absolute;
+			top: 50%;
+			left: 50%;
+			-webkit-animation: up-right 1s infinite;
+			-moz-animation: up-right 1s infinite;
+			-o-animation: up-right 1s infinite;
+			animation: up-right 1s infinite;
+		}
+
+		.space-bottom {
+			display: block;
+			margin-bottom: 7px;
+		}
+
+		@media only screen and (max-width: 970px) {
+			.container {
+				padding-left: 5px !important;
+				padding-right: 5px !important;
+			}
+
+			.container-fluid {
+				padding-left: 0px !important;
+				padding-right: 0px !important;
+			}
+
+			.content-area {
+				padding-top: 200px !important;
+				padding-right: 0 !important;
+				padding-left: 0 !important;
+			}
+
+			.sidebar-area {
+				overflow-y: scroll !important;
+				padding-top: 180px !important;
+			}
+
+			.mobile-sidebar {
+				color: #000;
+			}
+		}
+	</style>
+
+	<script type="text/javascript">
+		$(function () {
+			var dataFilePreview = "";
+			var parent = "";
+
+			justUpload();
+			viewFiles();
+			coupon_code_ui_toggle();
+			coupon_validation();
+			proceed_with_order();
+		});
+
+		function proceed_with_order() {
+			$("#proceed-with-order").click(function () {
+				$(".form-response").hide()
+				var level = $("[name='cal-level']").val();
+				var urgency = $("[name='cal-urgency']").val();
+				var pages = $("[name='calc-page-numbers']").val();
+				if (level == "" || urgency == "0") {
+					$(".form-response").show().html(
+						"<div class='alert alert-danger'><div class='close' data-dismiss='alert'>&times;</div>  All fields are required!</div> "
+						)
+					return;
+				}
+
+				$("#loading").dialog("show");
+				$.ajax({
+					url: "actions.php",
+					type: "post",
+					data: {
+						action: "clear_any_pending_coupon_code",
+
+					},
+					cache: false,
+					success: function (data) {
+						//alert( data );
+						$("#loading").dialog("hide");
+						$("#order-dialog").dialog("open");
+					},
+					error: function () {
+						$("#loading").dialog("hide");
+						alert("network error, please try again later");
+					}
+				});
+
+			});
+		}
+
+		function coupon_code_ui_toggle() {
+			$("body").on("click", ".coupon-code-toggle", function () {
+				$(".coupon-code-input").slideToggle();
+			});
+		}
+
+		function coupon_validation() {
+
+			$("[data-close='#order-dialog']").click(function () {
+				$(".coupon-code-response").show().html("");
+				$("[name='coupon-code-order']").val("");
+			});
+
+			$("[name='coupon-code-order']").on("keyup change", function () {
+				$(".coupon-code-response").show().html("");
+				var code = $(this).val();
+				var price = $("[name='calc-price']").val();
+
+				//alert( code );
+				//return;
+				if (code == "") {
+					$(".coupon-code-response").show().html("");
+					return;
+				}
+				$.ajax({
+					url: "actions.php",
+					type: "post",
+					data: {
+						action: "coupon_calculations",
+						code: code,
+						price: price
+					},
+					cache: false,
+					success(data) {
+						$(".coupon-code-response").show().html(data);
+					},
+					error: function () {
+						$(".coupon-code-response").show().html(
+							"<span class='text-danger'>Network error, please try again later</span>");
+					}
+				})
+			});
+
+		}
+
+		function viewFiles() {
+			$("body").on("click", ".system-view-files", function () {
+				var type = $(this).attr("file-type");
+				var orderId = $(this).attr("data-id");
+				$("#loading").dialog("show").find("h3").html("Please Wait...");
+				$.ajax({
+					url: "actions.php",
+					data: "action=system_view_files&type=" + type + "&orderId=" + orderId,
+					type: "post",
+					async: true,
+					cache: false,
+					success: function (data) {
+						$("#loading").dialog("hide");
+						$("#system-files-viewer").dialog("open").find(".file-viewer-holder").html(data);
+					},
+					error: function () {
+						$("#error").dialog("open").find("h3").html("Error! A network error has occured!");
+					}
+				});
+			});
+		}
+
+		function justUpload() {
+			//alert(1)
+			$("body").on("click", ".file-uploader-init", function (event) {
+				//alert(10)
+				if (event) event.preventDefault();
+				var fileType = $(this).attr("file-type");
+				dataFilePreview = $(this).attr("data-preview");
+				parent = $(this).attr("data-parent");
+				//alert(parent)
+				$("#what-uploading").val(fileType);
+				$("#file-uploader-dialog").dialog("open");
+				event.preventDefault();
+				return false;
+			});
+			$("body").on("click", ".uploader-trigger", function (event) {
+				event.preventDefault();
+				$(".uploade-them-all-triggered").trigger("click");
+			});
+			$(".uploade-them-all-triggered").change(function () {
+				$("#upload-all-files-form").submit();
+			});
+			uploadOrders();
+		}
+
+		function uploadOrders() {
+			uploadAllFiles("orders-upload-preview", "");
+			//uploadAllFiles("submitted-work-preview", "submitted-work-files");
+		}
+
+		function uploadAllFiles(preview, textarea_class) {
+			$("#upload-all-files-form").ajaxForm({
+				beforeSend: function () {
+					$("#loading").dialog("show").find("h3").html("Just a moment...");
+				},
+				uploadProgress: function (event, position, total, percentageComplete) {
+					$("#loading").dialog("show").find("h3").html("Just a moment - " + percentageComplete + "% ");
+				},
+				success: function () {
+					$("#loading").dialog("hide");
+					$(parent + " ." + dataFilePreview).show();
+				},
+				error: function () {
+					itHasError = true;
+					$("#loading").dialog("hide");
+					$("#error").dialog("open").find("h3").html(
+						"Error occurred! Please try again later! May be network error ");
+				},
+				complete: function (data) {
+					var response = data.responseText;
+					var mustAppend = 0;
+					var uploadedFiles = $(".uploader-value-them-all").val();
+					if (response != "") {
+						if (response.indexOf("568425630987TOKENIMGUPLOAD") < 0) {
+							if (uploadedFiles != "") {
+								mustAppend = "568425630987TOKENIMGUPLOAD";
+							} else {
+								mustAppend = "";
+							}
+						} else {
+							mustAppend = "568425630987TOKENIMGUPLOAD";
+						}
+					}
+					if (textarea_class == "") {
+						$(".uploader-value-them-all").val(uploadedFiles + mustAppend + data.responseText);
+					} else {
+						$("." + textarea_class).val(uploadedFiles + mustAppend + data.responseText);
+					}
+					var filesArray = response.split("568425630987TOKENIMGUPLOAD");
+					var requiredResponse = "";
+					var dataCount = " - ";
+					// we need to see if a file already exists in an array of uploaded files
+					var fileCheckerArray = Array();
+					if (uploadedFiles != "") {
+						if (uploadedFiles.indexOf("568425630987TOKENIMGUPLOAD") < 0) {
+							fileCheckerArray = Array(uploadedFiles);
+						} else {
+							fileCheckerArray = uploadedFiles.split("568425630987TOKENIMGUPLOAD");
+						}
+					}
+					for (var i = 0; i < filesArray.length; i++) {
+						if ($.inArray(filesArray[i], fileCheckerArray) >= 0) {
+							//console.log('data is exist!');
+						} else {
+							//console.log('data does not exist!');
+							var theEachFileArray = filesArray[i].split("index.html");
+							requiredResponse += dataCount + " " + theEachFileArray[theEachFileArray.length - 1] +
+								"<br />";
+						}
+
+					}
+					$(".preview-centered").hide();
+					//var directiveForMoreFiles = "";
+					//alert(dataFilePreview)
+					if (parent == "" || parent == null || typeof parent == typeof undefined) {
+						$("." + dataFilePreview).append(requiredResponse);
+					} else {
+						$(parent + " ." + dataFilePreview).append(requiredResponse);
+						//alert('appended on\n'+parent);
+					}
+					$(".uploader-files-preview").append(requiredResponse);
+					$(".the-add-more-files-link").show();
+					//$("."+directiveForMoreFiles).show();
+					//$("."+preview).append(requiredResponse);
+				}
+			});
+		}
+	</script>
+	<!-- WRITER CHAT -->
+
+	<script>
+		$(function () {
+			view_wrt();
+			viewMoreWriters();
+			collapsible_meta_data();
+			init_profile_upload();
+			uploader_docs();
+			viewUserReviews();
+		});
+
+		function viewUserReviews() {
+			$("body").on("click", ".view-user-ratings", function (event) {
+				event.preventDefault();
+				loadingThis("Please Wait...", true);
+				var user = $(this).attr("data-user");
+				$.ajax({
+					url: "actions.php",
+					data: "action=viewReviews&user=" + user,
+					type: "post",
+					async: true,
+					cache: false,
+					success: function (data) {
+						loadingThis("", false);
+						$("#user-dialog-reviews").dialog("open").find(".user-reviews-display").html(data);
+					},
+					error: function () {
+						loadingThis("", false);
+						errorThis("Network error, please try again later");
+					}
+				})
+			});
+		}
+
+		function view_wrt() {
+			$("body").on("click", ".non-admin-view-writer", function (e) {
+				if (e) e.preventDefault();
+
+				var writer = $(this).attr("data-writer");
+				ld("Please Wait");
+				$.ajax({
+					url: "actions.php",
+					type: "post",
+					data: {
+						action: "non_admin_view_writer",
+						writer: writer
+					},
+					success: function (data) {
+						ld("", false);
+						$("#non-admin-view-writers").dialog("open");
+						$(".non-admin-view-writers-display").html(data);
+					},
+					error: function () {
+						ld("", false);
+						alert(
+							"Could not complete your request due to internet connecdtion problems, please try again later");
+					}
+				});
+			});
+		}
+
+		function viewMoreWriters() {
+			$("body").on('click', '.view-more-writers-details', function (e) {
+				if (e) e.preventDefault();
+				var token = $(this).attr("data-token");
+				loadingThis("Please Wait...");
+				$.ajax({
+					url: "actions.php",
+					type: "post",
+					data: "action=viewMoreWritersDetails&token=" + token,
+					async: true,
+					cache: false,
+					success: function (data) {
+						loadingThis("", false);
+						$(".view-writer-more-data").html(data);
+						$("#dialog-view-more-writers").dialog("open");
+					},
+					error: function () {
+						loadingThis("", false);
+						error("Network Error occured, please try again later");
+					}
+				});
+			});
+		}
+
+		function collapsible_meta_data() {
+			//collopsible-meta-data
+			$("body").on("click", ".view-more-hiring-meta-data", function (event) {
+				if (event) event.preventDefault();
+
+				//$(this).html( "View Less &#8592;" );
+				if ($(this).parents('.card-display').find(".collopsible-meta-data").is(":visible")) {
+					$(this).html("View More →");
+				} else {
+					$(this).html("View Less &#8592;");
+				}
+				$(this).parents('.card-display').find(".collopsible-meta-data").slideToggle();
+
+			});
+		}
+
+		function init_profile_upload() {
+			$("body").on("click", ".profile-upload-init", function (event) {
+				if (event) event.preventDefault();
+
+				var attribute_ = $(this).attr('data-writer');
+
+				// `attribute_` is false.  Check for both.
+				if (typeof attribute_ !== typeof undefined && attribute_ !== false) {
+					// the atrribute does note exist
+					return;
+				}
+
+				// this happens when uploading profile image or when changing it
+
+				var writer = $("#uploading-profile-writer").val();
+
+				$.ajax({
+					url: "actions.php",
+					type: "post",
+					data: {
+						action: "current-writer-profile-image",
+						writer: writer
+					},
+					cache: false,
+					success: function (data) {
+						//alert( data )
+					},
+					error: function () {
+						alert("Upload was not possible because of problems in network connections");
+						location.reload();
+					}
+				})
+
+
+			});
+		}
+
+
+		function uploader_docs() {
+			//alert(10);
+			//return;
+			upload_them_all("doc-form-up-loader", "order-doc-response", "o-doc", "triger-upload-of-order-doc",
+				"triggered-order-doc-up-loader");
+			upload_them_all("doc-form-submit-order", "submit-work-doc-response", "input-order-submit",
+				"trigger-work-submission", "triggered-submit-order");
+			upload_them_all("form-upload-profile", "profile-upload-responses", "input-profile-upload",
+				"trigger-profile-upload", "triggered-profile-upload");
+			upload_them_all("sample-form-up-loader", "sample-file-response", "s-doc", "triger-upload-of-sample-doc",
+				"triggered-sample-doc-up-loader");
+			upload_them_all("sitemap-form-up-loader", "", "", "upload-the-sitemap", "triggered-sitemap-doc-up-loader");
+
+
+			upload_them_all("new-profile-upload-form", "", "", "profile-upload-init", "triggered-new-profile-upload-pic");
+		}
+
+
+		function upload_them_all(fromId, callBakInput, input, triggering, triggered) {
+			//alert( 'upload them all' )
+			$("#" + triggering).click(function () {
+				$("#" + triggered).trigger("click");
+				//alert(10)
+			});
+			$("#" + triggered).change(function () {
+				$("#" + fromId).submit();
+			});
+			var itHasError = false;
+			$("#" + fromId).ajaxForm({
+				beforeSend: function () {
+					$("#loading").dialog("show").find("h3").html("Just a moment...");
+				},
+				uploadProgress: function (event, position, total, percentageComplete) {
+					$("#loading").dialog("show").find("h3").html("Just a moment - " + percentageComplete + "% ");
+				},
+				success: function () {
+					$("#loading").dialog("hide");
+				},
+				error: function () {
+					itHasError = true;
+					$("#loading").dialog("hide");
+					$("#error").dialog("open").find("h3").html(
+						"Error occurred! Please try again later! May be network error ");
+				},
+				complete: function (data) {
+					if (itHasError) {
+						itHasError = false;
+						return;
+					}
+
+					$("#loading").dialog("hide");
+					var response = data.responseText;
+					//alert(response)
+					if (response == 2 || response == "2") {
+						$("#error").dialog("open").find("h3").html(
+							"You uploaded a larger file. Please compress your file");
+						return;
+					}
+					if (response == 4 || response == "4") {
+						$("#error").dialog("open").find("h3").html(
+							"That file is not allowed in the system! If you would like us to add it contact Admin ASAP so that we can white-list it. In the mean time, you can just zip your file(s) - zip files are acceptable"
+							);
+						return;
+					}
+					if (response == 16 || response == "16") {
+						$("#error").dialog("open").find("h3").html(
+							"That file has been rejected, please rename your file to <strong>sitemap.xml</strong>"
+							);
+						return;
+					}
+					if (response == "sitemap.xml") {
+						window.location.href = "#";
+						return;
+					}
+
+					//alert( response )
+
+
+					if (callBakInput != "")
+						$("." + callBakInput).show().html("Docoument <span class='ri ri-arrow-right'></span>[" +
+							response + "]");
+
+					if (input != "")
+						$("#" + input).val(response);
+					//alert(response);
+					if (response.indexOf("_____") >= 0) {
+						console.log("nice")
+						var responseArray = response.split("_____");
+						if (responseArray[1] == "345") {
+							success("Profile image has been uploaded", true);
+							$(".profile-image-update").attr("src", responseArray[0]);
+							return;
+						}
+					}
+
+					if (response.indexOf("KLSOILJ8983__BLOBS") >= 0) {
+
+						// the profile image ready for croping
+						var profile_to_upload_args = response.split("KLSOILJ8983__BLOBS");
+						var new_profile_image = profile_to_upload_args[0];
+
+						$("#image-cropper").attr("src", new_profile_image);
+						$("#profile-cropper").dialog("open");
+						process_cropper_();
+					}
+
+				}
+			});
+		}
+
+		function cropper_() {
+			const image = document.getElementById('image-cropper');
+
+			const cropper = new Cropper(image, {
+				aspectRatio: 1 / 1,
+				preview: '.img-preview',
+				crop(event) {
+					/*
+					console.log(event.detail.x);
+					console.log(event.detail.y);
+					console.log(event.detail.width);
+					console.log(event.detail.height);
+					console.log(event.detail.rotate);
+					console.log(event.detail.scaleX);
+					console.log(event.detail.scaleY);
+					*/
+				}
+			});
+
+			// uploading cropped image
+			$("body").on("click", "#upload-cropped-image", function () {
+				cropper.getCroppedCanvas().toBlob((blob) => {
+					const formData = new FormData();
+					// Pass the image file name as the third parameter if necessary.
+					formData.append('croppedImage', blob /*, 'example.png' */ );
+					// Use `jQuery.ajax` method for example
+					$("#loading").dialog("show").find("h3").html("Please Wait...");
+					$.ajax('upload-profiles.html', {
+						method: 'POST',
+						data: formData,
+						processData: false,
+						contentType: false,
+						success(data) {
+							$("#loading").dialog("hide")
+							reset_cropper();
+						},
+						error() {
+							$("#loading").dialog("hide")
+							console.log('Upload error');
+						}
+					});
+				});
+			});
+
+			$("body").on("click", "[data-close='#profile-cropper']", function () {
+				cropper.destroy();
+				cropper.clear();
+				reset_cropper();
+			});
+		}
+
+		function reset_cropper() {
+			$("#loading").dialog("show").find("h3").html("Resetting Cropper...");
+			location.reload();
+		}
+
+		function process_cropper_() {
+			var time = 0;
+			$("#loading").dialog("show").find("h3").html("Please Wait...");
+
+			function real_time_() {
+				var id = setTimeout(real_time_, 1000);
+				if (time == 2) {
+					clearTimeout(id);
+					$("#loading").dialog("hide");
+					cropper_();
+				}
+
+				time++;
+			}
+
+			real_time_();
+		}
+	</script>
+	<script>
+		$(function () {
+			take_care_of_mobile_side_bar();
+			mixed_animations();
+		});
+
+		function take_care_of_mobile_side_bar() {
+			$("body").on("click", ".open-sidebar", function () {
+				$("body").addClass('open-customs-side-bar');
+			});
+			$("body").on("click", ".close-sidebar", function () {
+				$("body").removeClass('open-customs-side-bar');
+			});
+		}
+
+		function mixed_animations() {
+			var n = 0;
+
+			function m_animate() {
+				setTimeout(m_animate, 1000);
+				if (n % 3 == 0 && n % 6 != 0) {}
+				if (n % 3 != 0 && n % 6 == 0) {
+
+
+				}
+				if (n % 3 != 0 && n % 6 != 0 && n % 9 == 0) {
+
+				}
+
+				n++;
+			}
+			m_animate();
+		}
+	</script>
+	<style type="text/css">
+		.open-customs-side-bar {
+			overflow: hidden !important;
+		}
+	</style>
+
+	<meta name="description"
+		content="Order For Writing Service at Writing Errands by submitting your order requirements and choose the best writer among 5000+ writing experts">
+	<meta name="keywords"
+		content="Writing Errands place an order, Writing Errands, essay services, assignments, academic writing">
+	<meta name="author" content="Benson Karue Mwangi, SEO expert at HACK SMILE hacksmile.com">
+	<link rel="stylesheet" href="#">
+</head>
+
+<body style="background: white;">
+	<!-- begin olark code -->
+	<script type="text/javascript" async>
+		;
+		(function (o, l, a, r, k, y) {
+			if (o.olark) return;
+			r = "script";
+			y = l.createElement(r);
+			r = l.getElementsByTagName(r)[0];
+			y.async = 1;
+			y.src = "//" + a;
+			r.parentNode.insertBefore(y, r);
+			y = o.olark = function () {
+				k.s.push(arguments);
+				k.t.push(+new Date)
+			};
+			y.extend = function (i, j) {
+				y("extend", i, j)
+			};
+			y.identify = function (i) {
+				y("identify", k.i = i)
+			};
+			y.configure = function (i, j) {
+				y("configure", i, j);
+				k.c[i] = j
+			};
+			k = y._ = {
+				s: [],
+				t: [+new Date],
+				c: {},
+				l: a
+			};
+		})(window, document, "static.olark.com/jsclient/loader.html");
+		/* custom configuration goes here (www.olark.com/documentation) */
+		olark.identify('1706-669-10-6552');
+	</script>
+	<!-- end olark code -->
+	<div class="container-fluid main-header-wrapper">
+		<div class='header-wrapper'>
+			<div class='container-fluid header-top-title'>
+				<div class='container'>
+					<div class="row">
+						<div class="col-md-3">
+							<div class="header-phone"><span class="ri ri-envelope"></span> <a
+									href='#'>support@writtingerrands.com</a></div>
+						</div>
+						<div class="col-md-6">
+							<h1><a href='index.html'><img src='images/' alt='Writing Errands'
+										style='max-height: 50px;' /></a></h1>
+						</div>
+						<div class="col-md-3"></div>
+					</div>
+				</div>
+			</div>
+			<nav class="navbar navbar-default real-nav header-alt">
+				<div class="container">
+					<!-- Brand and toggle get grouped for better mobile display -->
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+							data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+							<span class="sr-only">Toggle navigation</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+					</div>
+					<!-- Collect the nav links, forms, and other content for toggling -->
+					<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+						<ul class="nav navbar-nav">
+							<li><a href="#">Samples</a></li>
+							<li><a href="#">Buy/Rent Books</a></li>
+							<li><a href="#">Terms of Service</a></li>
+							<li><a href="#">Blog</a></li>
+							<li><a href="contact-us.html">Contact Us</a></li>
+
+						</ul>
+						<ul class="nav navbar-nav navbar-right">
+							<!-- <li><a href="./writers/" style='text-transform: uppercase; border-radius: 5px 5px 0 0 !important;  margin-right: 7px; background: #B50000; color: #fff; ' class='writing-estate-special-btn'><span class="ri ri-pencil"></span> Become a Writer</a></li> -->
+							<li><a href="order.html"
+									style='text-transform: uppercase; border-radius: 5px 5px 0 0 !important; background: #015079; color: #fff; '
+									class='writing-estate-special-btn'><span class="ri ri-pencil-square"></span> Place
+									an Order </a></li>
+							<li><a href="login.html"><span class='ri ri-user'></span> Login</a></li>
+							<li><a href="#"><span class="ri ri-check-square"></span> Sign Up</a></li>
+						</ul>
+					</div><!-- /.navbar-collapse -->
+				</div><!-- /.container-fluid -->
+			</nav>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		var dots = 0;
+
+		$(document).ready(function () {
+			typingDots();
+		});
+
+		function typingDots() {
+			setTimeout(typingDots, 300);
+			if (dots < 3) {
+				$(".typing-dots").append(".");
+			} else {
+				$(".typing-dots").html("");
+				dots = -1;
+			}
+			dots++;
+		}
+
+		function clickTypingDots() {}
+	</script>
+
+	<center>
+		<div class='container-fluid page-title'>
+			<div class='container'>
+				<div class='row'>
+					<div class='col-md-12'>
+						<h1>Order Now</h1>
+					</div>
+					<div class='col-md-12'><span style="color: #fff!important;">Make your order and get your work
+							delivered on time</span></div>
+				</div>
+			</div>
+		</div>
+	</center>
+
+
+	<div class='container-fluid container-main page-nicer-content '
+		style='background: #fff; min-height: 100%; color: #c0cde0;'>
+		<div class='container '>
+			<div class="row">
+				<input type='hidden' value='' id='the-hiring-writer' />
+				<div class='col-md-1'></div>
+				<div class="col-md-12" style="color: #000">
+					Order For Writing Service at Writing Errands by submitting your order requirements and choose the
+					best writer among 5000+ writing experts
+					<div class="form-holder" style="background-color: #0291DD">
+
+						<script type="text/javascript">
+							$(function () {
+								$("#other-services-btn").click(function () {
+									var topic = $("[name='other-topic']").val();
+									var description = $("[name='other-description']").val();
+									var budget = $("[name='other-budget']").val();
+									var urgency = $("[name='other-cal-urgency']").val();
+									var files = $(".uploader-value-them-all").val();
+									var fileType = $("#what-uploading").val();
+									if (isEmpty(topic) || isEmpty(budget) || isEmpty(urgency)) {
+										$("#error").dialog("open").find("h3").html(
+											"Error, please fill in all the required fields");
+										return;
+									}
+									$("#loading").dialog("show").find("h3").html("Please Wait");
+									$.ajax({
+										url: "actions.php",
+										data: "action=addToCart&topic=" + topic + "&description=" + description +
+											"&price=" + budget + "&urgency=" + urgency + "&files=" + files +
+											"&fileType=" + fileType,
+										type: "post",
+										async: true,
+										cache: false,
+										success: function (data) {
+											//alert(data);
+											$("#loading").dialog("hide");
+											//if(data == "1" || data == 1){
+											if ($.trim(data)) {
+												window.location =
+													"login51ca.html?action=determineDirectionAferAddingToCart";
+											}
+										},
+										error: function () {
+											$("#loading").dialog("hide");
+											$("#error").dialog("open").find("h3").html(
+												"An error occurred, please check your internet connection");
+										}
+									});
+								});
+
+								function isEmpty(str) {
+									if (str.replace(/\s+/, "") == "") {
+										return true;
+									}
+									return false;
+								}
+							});
+						</script>
+						<div class="dynamic-order">
+							<div class="dynamic-order-start">
+								<center>
+									<h3 class="dymanic-order-start">What Are You Looking For? <br /><small>We're here to
+											assist you. Please select a service</small></h3>
+								</center>
+								<center>
+									<img src='images/banner-bg.png' class='img-fluid img-responsive'
+										alt='Writing Errands - ordering services' style='max-height: 150px;' /></center>
+								<span class="d-writing-service" class="btn btn-lg btn-success" data-toggle="modal"
+									data-target="#basicModal"></w> Writing Services</span>
+								<span class="d-other-services" class="btn btn-lg btn-success" data-toggle="modal"
+									data-target="#basicModal"></w> Other Services - <small>Maths, Coding,
+										e.t.c</small></span>
+							</div>
+							<div class="container">
+								<div class="modal fade" id="basicModal" tabindex="-1" role="dialog"
+									aria-labelledby="basicModal" aria-hidden="true">
+									<div class="modal-dialog modal-lg">
+										<div class="dynamic-order-1">
+											<div class="item">
+												<div class='writing-estate-calculator' style="">
+													<span class="back-to-services-options-btn"> <span
+															class="ri ri-arrow-left"></span> Back to Services</span>
+													<center><span
+															style="display: inline-block; font-size: 17px; text-transform: uppercase; font-weight: 700; margin-bottom: 15px;">Writing
+															Service</span></center>
+													<div>
+														<h4
+															style="display: inline-block; margin-right: 30px; color: #fff;">
+															Calculate Your Order</h4>
+														<h4 style="display: inline-block; color: #fff;">Price: <span
+																style="color: #1ad2e4;" class='calc-total'>0 USD</span>
+															<a href='#' style="font-size: 13px; display: none;"
+																class="explain-price-opner" data-zoom-in="dialog"
+																q-target="#price-explainer-dialog">Explain This</a></h4>
+													</div>
+													<BR />
+													<div class='form-response'></div>
+													<form class='form-horizontal' method='post' onsubmit='return false'>
+														<div class='form-group'>
+															<label class='col-md-3'>Level</label>
+															<div class='col-md-9'>
+																<select class='form-control' name='cal-level' value=''>
+																	<option value=''>-Select Level-</option>
+																	<option value='High School'>High School</option>
+																	<option value='College'>College</option>
+																	<option value='Undergraduate'>Undergraduate</option>
+																	<option value='Masters'>Masters</option>
+																	<option value='PHD'>PHD</option>
+																</select>
+															</div>
+														</div>
+
+														<div class='form-group'>
+															<label class="col-md-3">Urgency</label>
+															<div class='col-md-9'>
+																<select class='form-control' name='cal-urgency'>
+																	<option value="0">-Select-</option>
+																	<option value="6">6 hours</option>
+																	<option value="12">12 hours</option>
+																	<option value="24">24 hours</option>
+																	<option value="36">36 hours</option>
+																	<option value="48">48 hours</option>
+																	<option value="72">3 days</option>
+																	<option value="120">5 days</option>
+																	<option value="168">7 days</option>
+																	<option value="216">9 days</option>
+																	<option value="240">10 days</option>
+																	<option value="264">14 days</option>
+																	<option value="504">21 days</option>
+																	<option value="720">30 days</option>
+																	<option value="1440">2 Months</option>
+																</select>
+															</div>
+														</div>
+														<div class='form-group'>
+															<label class='col-md-3'>Spacing</label>
+															<div class='col-md-9'>
+																<select class='form-control' name='cal-spaces' value=''>
+																	<option value='Double Spaced'>Double Spaced</option>
+																	<option value='Single Spaced'>Single Spaced</option>
+																</select>
+															</div>
+														</div>
+														<div class='form-group'>
+															<label class='col-md-3'></label>
+															<div class='col-md-9'>
+
+																<div class='form-info'
+																	style="background-color: #31425f">
+																	Power Point Presentaion [optional] - (1 slide = $5)
+																</div>
+															</div>
+
+														</div>
+														<div class='form-group'>
+															<label class='col-md-3'>No of Slides</label>
+															<div class='col-md-9 '>
+																<input type='number' name='calc-slides' value='0'
+																	class='form-control' min='0' />
+															</div>
+														</div>
+
+
+														<div class='form-group'>
+															<label class='col-md-3'></label>
+															<div class='col-md-9 '>
+																<input type='hidden' name='calc-price' value='0'
+																	class='form-control' />
+															</div>
+														</div>
+														<div class='form-group '>
+															<label class='col-md-3'></label>
+															<div class="col-md-9">
+																<input type="submit" value="Proceed"
+																	class="btn btn-primary">
+																<!-- onclick="openModal();" -->
+															</div>
+														</div>
+													</form>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="dynamic-order-2">
+								<div class="writing-estate-calculator">
+									<span class="back-to-services-options-btn"> <span class="ri ri-arrow-left"></span>
+										Back to Services</span>
+									<center><span
+											style="display: inline-block; font-size: 17px; text-transform: uppercase; font-weight: 700; margin-bottom: 15px;">Other
+											Services</span></center>
+									<form class='form-horizontal' method='post'>
+										<div class='form-group'>
+											<label class='col-md-0'></label>
+											<div class='col-md-12 '>
+
+
+												<input type='text' name='other-topic' value='' class='form-control'
+													placeholder='Topic' /></div>
+										</div>
+
+
+										<div class='form-group'>
+											<label class='col-md-0'></label>
+											<div class='col-md-12'>
+												<textarea class='form-control' name='other-description'
+													style='min-height: 150px;'
+													placeholder='Write a Description'></textarea>
+											</div>
+										</div>
+										<div class='form-group'>
+											<label class='col-md-0'></label>
+											<div class='col-md-12 '>
+
+
+												<input type='number' name='other-budget' value='' class='form-control'
+													placeholder='Budget in USD ($)' min='1'
+													id='other-services-budget' /></div>
+										</div>
+
+
+										<div class='form-group'>
+											<label class="col-md-0"></label>
+											<div class='col-md-12'>
+												<select class='form-control' name='other-cal-urgency'>
+													<option value="0">-Select Urgency-</option>
+													<option value="6">6 hours</option>
+													<option value="12">12 hours</option>
+													<option value="24">24 hours</option>
+													<option value="36">36 hours</option>
+													<option value="48">48 hours</option>
+													<option value="72">3 days</option>
+													<option value="120">5 days</option>
+													<option value="168">7 days</option>
+													<option value="216">9 days</option>
+													<option value="240">10 days</option>
+													<option value="264">14 days</option>
+													<option value="504">21 days</option>
+													<option value="720">30 days</option>
+													<option value="1440">2 Months</option>
+												</select>
+											</div>
+										</div>
+										<div class='form-group'>
+											<label class='col-md-0'></label>
+											<div class='col-md-12'>
+												<span><span><strong><a href='#' class='file-uploader-init' file-type='0'
+																data-preview='preview-other-services-files'>Upload Your
+																Files</a> [optional]</strong></span><br /><span
+														class='preview-other-services-files'></span></span>
+											</div>
+										</div>
+
+										<div class='form-group'>
+											<label class='col-md-0'></label>
+											<div class='col-md-12'>
+												<input type='submit' value='Proceed' id='other-services-btn'
+													class='btn btn-info' />
+											</div>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="mh" id="update_status">
+						<div class='alert alert-info'>
+							<center>You can skip hiring a writer, management will match you with best writer to handle
+								your task</center>
+						</div>
+						<h3 style="color: #000;">Hire an Expert Writer</h3>
+						<div class='col-md-12'>
+							<div class='card-display'
+								style='min-height: 200px; margin-bottom: 10px;background-color: transparent;'>
+								<div class='grid-box profile-meta-data' style="padding: 20px">
+									<div class='col-box-4'>
+										<img src='images/Screenshot_57.html'>
+									</div>
+									<div class='col-box-5'>
+										<h4>john wanjiku</h4>
+										<button class="btn btn-sm"
+											style="background-color: transparent; color: red; border-color: red; padding: 2px 4px; margin-bottom: 10px;">Offline</button>
+										<div class='rating-meta-data'>
+											<span class='user-rating-number-0'>0.0</span><span
+												class='ri ri-star user-rating-star rating'
+												style='color: #BEC0C2;'></span><span
+												class='ri ri-star user-rating-star rating'
+												style='color: #BEC0C2;'></span><span
+												class='ri ri-star user-rating-star rating'
+												style='color: #BEC0C2;'></span><span
+												class='ri ri-star user-rating-star rating'
+												style='color: #BEC0C2;'></span><span
+												class='ri ri-star user-rating-star rating'
+												style='color: #BEC0C2;'></span> </div>
+									</div>
+									<div class='col-box-3'>
+										<a class="my-btn" href='#'>Hire</a>
+										<br /><br />
+										<strong><a href='#' onclick='return false;'
+												class='view-more-hiring-meta-data'>View More &#8594;</a></strong>
+									</div>
+								</div>
+								<div class='orders-done-meta-data collopsible-meta-data'>
+									<div class='grid-box'>
+										<div class='col-box-6'>
+											<span>Completed 10 Orders</span>
+											<span>Success Rate 0/5</span>
+											<span>Active Writer</span>
+										</div>
+										<div class='col-box-6'>
+											<center>
+												<br /><br />
+												<a href='#'>View Profile</a>
+											</center>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div><!-- col-md-4 -->
+						<div class='col-md-12'>
+							<div class='card-display'
+								style='min-height: 200px; margin-bottom: 10px; background-color: transparent;'>
+								<div class='grid-box profile-meta-data' style="padding: 20px">
+									<div class='col-box-4'>
+										<img src='images/Screenshot_57.html'>
+									</div>
+									<div class='col-box-5'>
+										<h4>john wanjiku</h4>
+										<button class="btn btn-sm"
+											style="background-color: transparent; color: red; border-color: red; padding: 2px 4px; margin-bottom: 10px;">Offline</button>
+										<div class='rating-meta-data'>
+											<span class='user-rating-number-0'>0.0</span><span
+												class='ri ri-star user-rating-star rating'
+												style='color: #BEC0C2;'></span><span
+												class='ri ri-star user-rating-star rating'
+												style='color: #BEC0C2;'></span><span
+												class='ri ri-star user-rating-star rating'
+												style='color: #BEC0C2;'></span><span
+												class='ri ri-star user-rating-star rating'
+												style='color: #BEC0C2;'></span><span
+												class='ri ri-star user-rating-star rating'
+												style='color: #BEC0C2;'></span> </div>
+									</div>
+									<div class='col-box-3'>
+										<a href='#' class="my-btn">Hire</a>
+										<br /><br />
+										<strong><a href='#' onclick='return false;'
+												class='view-more-hiring-meta-data'>View More &#8594;</a></strong>
+									</div>
+								</div>
+								<div class='orders-done-meta-data collopsible-meta-data'>
+									<div class='grid-box'>
+										<div class='col-box-6'>
+											<span>Completed 10 Orders</span>
+											<span>Success Rate 0/5</span>
+											<span>Active Writer</span>
+										</div>
+										<div class='col-box-6'>
+											<center>
+												<br /><br />
+												<a href='#'>View Profile</a>
+											</center>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div><!-- col-md-4 -->
+						<div class='col-md-12'>
+							<div class='card-display'
+								style='min-height: 200px; margin-bottom: 10px; background-color: transparent;'>
+								<div class='grid-box profile-meta-data' style="padding: 20px">
+									<div class='col-box-4'>
+										<img src='images/Screenshot_57.html'>
+									</div>
+									<div class='col-box-5'>
+										<h4>john wanjiku</h4>
+										<button class="btn btn-sm"
+											style="background-color: transparent; color: red; border-color: red; padding: 2px 4px; margin-bottom: 10px;">Offline</button>
+										<div class='rating-meta-data'>
+											<span class='user-rating-number-0'>0.0</span><span
+												class='ri ri-star user-rating-star rating'
+												style='color: #BEC0C2;'></span><span
+												class='ri ri-star user-rating-star rating'
+												style='color: #BEC0C2;'></span><span
+												class='ri ri-star user-rating-star rating'
+												style='color: #BEC0C2;'></span><span
+												class='ri ri-star user-rating-star rating'
+												style='color: #BEC0C2;'></span><span
+												class='ri ri-star user-rating-star rating'
+												style='color: #BEC0C2;'></span> </div>
+									</div>
+									<div class='col-box-3'>
+										<a class="my-btn" href='#'>Hire</a>
+										<br /><br />
+										<strong><a href='#' onclick='return false;'
+												class='view-more-hiring-meta-data'>View More &#8594;</a></strong>
+									</div>
+								</div>
+								<div class='orders-done-meta-data collopsible-meta-data'>
+									<div class='grid-box'>
+										<div class='col-box-6'>
+											<span>Completed 10 Orders</span>
+											<span>Success Rate 0/5</span>
+											<span>Active Writer</span>
+										</div>
+										<div class='col-box-6'>
+											<center>
+												<br /><br />
+												<a href='#'>View Profile</a>
+											</center>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div><!-- col-md-4 -->
+					</div>
+					<a class="view_more" href="#">View More Writers</a>
+				</div>
+			</div>
+		</div>
+	</div> <input type="hidden" id='this-page-title' value=''>
+	<input type="hidden" value='10' id='hu' />
+	<input type="hidden" value='10' id='hm' />
+	<input type="hidden" value='8' id='hn' />
+	<input type="hidden" value='12 ' id='cu' />
+	<input type="hidden" value='10' id='cm' />
+	<input type="hidden" value='10' id='cn' />
+	<input type="hidden" value='14' id='mu' />
+	<input type="hidden" value='12' id='mm' />
+	<input type="hidden" value='10' id='mn' />
+	<input type="hidden" value='17' id='pu' />
+	<input type="hidden" value='13' id='pm' />
+	<input type="hidden" value='10' id='pn' />
+	<input type="hidden" value='48' id='urgent-cpp' />
+	<input type="hidden" value='72' id='m-urgent-cpp' />
+	<input type="hidden" value='0' id='is-logged-in' />
+	<input type="hidden" class="form-control" id="off-discount" value="20" />
+	<input type="hidden" class="form-control" id='slide-cost' value="5" />
+	<!-- budget agreement triggers -->
+	<input type='hidden' name='user-status' value='' />
+	<!-- end of budget agreement triggers -->
+	<input type="hidden" class="form-control" id="what-uploading" />
+	<div style="display: none">
+		<textarea class="uploader-value-them-all"></textarea>
+	</div>
+	<input type='hidden' class="b-url" value="index.html">
+	<style type="text/css">
+		div[data-show="dialog"] {
+			background: rgba(0, 0, 0, 0.5);
+			z-index: 9999999999;
+		}
+
+		div.dialog-header .dialog-header-nicer {
+			background: #31425f;
+			border-radius: 5px;
+		}
+
+		div.dialog-content {
+			border-radius: 5px;
+			padding: 0;
+		}
+
+		div.dialog-content div.dialog-content-nicer {
+			border: none !important;
+			padding: 0 !important;
+			border-bottom: 1px solid #e1e1e1;
+		}
+
+		div.dialog-content div.dialog-content-nicer div.dialog-body-nicer {
+			border: none;
+		}
+
+		.dialog-footer .dialog-footer-nicer {
+			border: none;
+		}
+	</style>
+	<div id="non-admin-view-writers" data-show="dialog" data-zoom-out="dialog" data-close="#non-admin-view-writers">
+		<div class="dialog-content">
+			<div class="dialog-content-nicer">
+				<div class="dialog-header">
+					<div class="dialog-header-nicer">
+						<div class="close" data-zoom-out="dialog" data-close="#non-admin-view-writers">&times;</div>
+						<h3>More Details About this Writer</h3>
+					</div>
+				</div>
+				<div class="dialog-body">
+					<div class="dialog-body-nicer">
+						<div class='non-admin-view-writers-display'></div>
+					</div>
+				</div>
+				<div class="dialog-footer">
+					<div class="dialog-footer-nicer">
+						Writing Errands &copy; 2021
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="dialog-view-more-writers" data-show="dialog" data-zoom-out="dialog" data-close="#dialog-view-more-writers">
+		<div class="dialog-content">
+			<div class="dialog-content-nicer">
+				<div class="dialog-header">
+					<div class="dialog-header-nicer">
+						<div class="close" data-zoom-out="dialog" data-close="#dialog-view-more-writers">&times;</div>
+						<h3>More Details About this Writer</h3>
+					</div>
+				</div>
+				<div class="dialog-body">
+					<div class="dialog-body-nicer">
+						<div class='view-writer-more-data'></div>
+					</div>
+				</div>
+				<div class="dialog-footer">
+					<div class="dialog-footer-nicer">
+						Writing Errands &copy; 2021
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="user-dialog-reviews" data-show="dialog" data-zoom-out="dialog" data-close="#user-dialog-reviews">
+		<div class="dialog-content">
+			<div class="dialog-content-nicer">
+				<div class="dialog-header">
+					<div class="dialog-header-nicer">
+						<div class="close" data-zoom-out="dialog" data-close="#user-dialog-reviews">&times;</div>
+						<h3>User Reviews</h3>
+					</div>
+				</div>
+				<div class="dialog-body">
+					<div class="dialog-body-nicer">
+						<div class='user-reviews-display'></div>
+					</div>
+				</div>
+				<div class="dialog-footer">
+					<div class="dialog-footer-nicer">
+						Writing Errands &copy; 2021
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- <div id="openModal" class="my-Modal">
+										<div class="dialog-content">
+										<div class="dialog-content-nicer">
+											<div class="dialog-header">
+												<div class="dialog-header-nicer">
+													<div class="close" data-zoom-out="dialog" data-close="#order-dialog">&times;</div>
+													<h3>Complete Your Order</h3>
+												</div>
+											</div>
+											<div class="dialog-body">
+												<div class="dialog-body-nicer">
+													
+													<center><span style='display: inline-block; font-size: 21px; color: #55A868; padding: 10px; border: 1px solid #e1e1e1; font-weight: bold;' class="calc-total">0 USD</span></center><br />
+													<br />
+													<div class='coupon-code-holder'>
+														<div class='coupon-code-toggle'>Do you have a Coupon Code? Click Here
+															<div class='pull-right'><span class="ri ri-chevron-down"></span></div>
+														</div>
+														<div class='coupon-code-input'>
+															<input type='text' name='coupon-code-order' class='form-control' placeholder='Enter coupon code here' />
+														</div>
+														<div class='coupon-code-response'>
+															<span class='success'>10% off save $7, You will pay $3 <a href='#' data-zoom-in='dialog' q-target='#coupon-code-learn-more'>Learn more</a></span>
+														</div>
+													</div>
+													<center><p><small>All fields are required with an exception of documents uploads. If your order is coding or technical, make sure you selected other services instead of writing service </small></p></center> <br /><form class='form-horizontal' method='post'  onsubmit='return false;' >
+													<div class='form-group'>
+														<label class='col-md-2'>Topic</label>
+														<div class='col-md-10 ' >
+															
+															
+															<input type='text' name='o-topic' value='' class='form-control' />
+														</div>
+													</div>
+													
+													<div class='form-group'>
+														<label class='col-md-2'>No of References</label>
+														<div class='col-md-10'>
+															<select class='form-control' name='o-ref' value=''>
+																<option value=''>-Select Number of References-</option><option value='1'>1</option><option value='2'>2</option><option value='3'>3</option><option value='4'>4</option><option value='5'>5</option><option value='6'>6</option><option value='7'>7</option><option value='8'>8</option><option value='9'>9</option><option value='10'>10</option><option value='11'>11</option><option value='12'>12</option><option value='13'>13</option><option value='14'>14</option><option value='15'>15</option><option value='16'>16</option><option value='17'>17</option><option value='18'>18</option><option value='19'>19</option><option value='20'>20</option><option value='21'>21</option><option value='22'>22</option><option value='23'>23</option><option value='24'>24</option><option value='25'>25</option><option value='26'>26</option><option value='27'>27</option><option value='28'>28</option><option value='29'>29</option><option value='30'>30</option><option value='31'>31</option><option value='32'>32</option><option value='33'>33</option><option value='34'>34</option><option value='35'>35</option><option value='36'>36</option><option value='37'>37</option><option value='38'>38</option><option value='39'>39</option><option value='40'>40</option><option value='41'>41</option><option value='42'>42</option><option value='43'>43</option><option value='44'>44</option><option value='45'>45</option><option value='46'>46</option><option value='47'>47</option><option value='48'>48</option><option value='49'>49</option><option value='50'>50</option>
+															</select>
+														</div>
+													</div>
+													
+													<div class='form-group'>
+														<label class='col-md-2'>Style</label>
+														<div class='col-md-10'>
+															<select class='form-control' name='o-style' value=''>
+																<option value=''>-Select your preferred style-</option><option value='Harvard'>Harvard</option><option value='MLA'>MLA</option><option value='APA'>APA</option><option value='Oxford'>Oxford</option><option value='Chicago'>Chicago</option>
+															</select>
+														</div>
+													</div>
+													
+													<div class='form-group'>
+														<label class='col-md-2'>Preferred Language</label>
+														<div class='col-md-10'>
+															<select class='form-control' name='o-language' value=''>
+																<option value=''>-Select your preferred language-</option><option value='English U.S'>English U.S</option><option value='English U.K'>English U.K</option><option value='Canadian Egnlish'>Canadian Egnlish</option><option value='Australian English'>Australian English</option>
+															</select>
+														</div>
+													</div>
+													
+													<div class='form-group'>
+														<label class='col-md-2'>Description</label>
+														<div class='col-md-10'>
+															<textarea class='form-control' name='o-description' style='min-height: 150px;' ></textarea>
+														</div>
+													</div>
+													<div class='form-group'>
+														<label  class='col-md-2'>Upload Documents [optional]</label>
+														<div  class='col-md-10'>
+															<span><a href="#" class="file-uploader-init" data-preview="e-w-c-order-file-type" file-type="0" Upload Files data-parent="" ><span class="ri ri-cloud-upload" ></span> Add Files</a></span>
+														</div>
+													</div>
+													
+													<div class='form-group'>
+														<label  class='col-md-2'></label>
+														<div  class='col-md-10'>
+															<span><span class='e-w-c-order-file-type'></span></span>
+														</div>
+													</div>
+													
+													<div class='form-group'>
+														<label class='col-md-2'></label>
+														<div class='col-md-10 '>
+															
+															
+															<input type='hidden' name='o-doc' value='' class='form-control' id='o-doc'  /></div>
+														</div>
+														
+														<br />
+														<div class='form-group'>
+															<label class='col-md-2'></label>
+															<div class='col-md-10'>
+																<button class='btn btn-info' id='complete-order'><span class='ri-shopping-cart' ></span> Checkout</button>
+															</div>
+														</div>
+													</form>
+												</div>
+											</div>
+											<div class="dialog-footer">
+												<div class="dialog-footer-nicer">
+													Writing Errands &copy; 2021
+												</div>
+											</div>
+										</div>
+									</div> -->
+	</div>
+
+	<div id="nice-order-assistance" data-show="dialog">
+		<div class="dialog-content">
+			<div class="dialog-content-nicer">
+				<div class="dialog-header">
+					<div class="dialog-header-nicer">
+						<div class="close" data-zoom-out="dialog" data-close="#nice-order-assistance">&times;</div>
+						<h3>Order Assistance</h3>
+					</div>
+				</div>
+				<div class="dialog-body">
+					<div class="dialog-body-nicer">
+						<div style="font-size: 15px;">
+							<h3>Ordering on Writing Errands</h3>
+							Stuck with your order or not sure where to place your order? First, let me state that, there
+							is nothing you cannot order on our website.<br /><br />
+							Please <strong><u>Make sure</u></strong> you read through this snippet, to understand
+							everything that needs to be understood<br /><br />
+							Our website has two ordering sections as shown in the image below.<br /><br />
+							<center><img src='images/Screenshot_57.html' class='img-responseive'
+									style="max-height: 350px;" /></center>
+							<br /><br />
+							From the image above, we have two sections:
+							<ul>
+								<li><strong>Writing Service - Cost Calculator</strong></li>
+								<li><strong>Others</strong></li>
+							</ul>
+							<h4 style="font-weight: 700;">Writing Service - Cost Calculator</h4>
+							This section should be used <strong><u>specifically</u></strong> by customers who would want
+							anything concerning writing and has pages, such as, essay writing, research papers, academic
+							writing, e.t.c.<br /><br />
+							Please note, this area should not be used by people who want power point slides only. If you
+							want power point slides only and nothing else, please use <strong><u>Others</u></strong>
+							button. Please refer to the image above.<br /><br />
+							In other cases, if you find cost per page outside your budget for any level, you can still
+							use <strong><u>Others</u></strong> button and set your preferred budget. Please follow the
+							next subheading to understand more about <strong><u>Others</u></strong> button, as shown in
+							the image above
+							<h4 style="font-weight: 700;">Others/ Other Services</h4>
+							This is the button that you probably need. This button was placed to enable anyone who does
+							not need writing to order anything on our platform, and the best thing, the budget on this
+							area is set explicitly by you<br /><br />
+							This button can be literately used to order anything. Let's say for example, you found
+							writing cost calculator charging outside your budget, then you can use this button and give
+							instructions in the order description, then set your own budget<br /><br />
+							The best thing about this button is that, you set your own budget. The budget is not
+							predetermined. We allow customers to set their own budget and upon payment, they are
+							required to negotiate the applied budget with management. Sounds, good? Try it today.
+							<br /><br />
+							<h4 style="font-weight: 700;">SUMMERY</h4>
+							We can summit it up by saying, every time you doubt what you are supposed to order from
+							Writing Errands, always use <strong><u>Others</u></strong> button and set your preferred
+							budget. That the button that you can use to order anything, literally anything. <br /><br />
+							<strong>
+								Thanks for Support<br />
+								HOD Support Department<br />
+								Writing Errands<br />
+								<img src='images/support-sign.html' style="max-width: 200px;" />
+							</strong>
+						</div>
+					</div>
+				</div>
+				<div class="dialog-footer">
+					<div class="dialog-footer-nicer">
+						Writing Errands &copy; 2021
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="coupon-code-learn-more" data-show="dialog" data-zoom-out="dialog" data-close="#coupon-code-learn-more">
+		<div class="dialog-content">
+			<div class="dialog-content-nicer">
+				<div class="dialog-header">
+					<div class="dialog-header-nicer">
+						<div class="close" data-zoom-out="dialog" data-close="#coupon-code-learn-more">&times;</div>
+						<h3>Coupon Order Instructions</h3>
+					</div>
+				</div>
+				<div class="dialog-body">
+					<div class="dialog-body-nicer">
+						<div>
+							<p>Coupon code will be applied to this order only. The coupon code will be validated after
+								ordering, if you had previously used to this coupon code, it will be invalid</p>
+							<p>Make sure the entered coupon code have not expired</p>
+							<p>Different coupon codes attracts different discount and offers</p>
+							<p>We appreciate the opportunity to continue working with you</p>
+						</div>
+					</div>
+				</div>
+				<div class="dialog-footer">
+					<div class="dialog-footer-nicer">
+						Writing Errands &copy; 2021
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="price-explainer-dialog" data-show="dialog" data-zoom-out="dialog" data-close="#price-explainer-dialog">
+		<div class="dialog-content">
+			<div class="dialog-content-nicer">
+				<div class="dialog-header">
+					<div class="dialog-header-nicer">
+						<div class="close" data-zoom-out="dialog" data-close="#price-explainer-dialog">&times;</div>
+						<h3>Your Price is Explained Below</h3>
+					</div>
+				</div>
+				<div class="dialog-body">
+					<div class="dialog-body-nicer">
+						<div class='price-explainer-display'></div>
+					</div>
+				</div>
+				<div class="dialog-footer">
+					<div class="dialog-footer-nicer">
+						Writing Errands &copy; 2021
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<form class='form-horizontal' method='post' id='doc-form-up-loader' style='display: none; '
+		action='https://writingerrands.com/uploads.php'>
+		<div class='form-group'>
+			<label class='col-md-0'></label>
+			<div class='col-md-12 '>
+
+
+				<input type='file' name='order-doc-upload' value='' class='form-control'
+					id='triggered-order-doc-up-loader' /></div>
+		</div>
+
+
+		<div class='form-group'>
+			<label class='col-md-0'></label>
+			<div class='col-md-12'>
+				<input type='submit' value='Upload' class='btn btn-info' />
+			</div>
+		</div>
+	</form>
+	<form class='form-horizontal' method='post' id='doc-form-submit-order' style='display: none; '
+		action='https://writingerrands.com/uploads.php'>
+		<div class='form-group'>
+			<label class='col-md-0'></label>
+			<div class='col-md-12 '>
+
+
+				<input type='file' name='order-doc-upload' value='' class='form-control' id='triggered-submit-order' />
+			</div>
+		</div>
+
+
+		<div class='form-group'>
+			<label class='col-md-0'></label>
+			<div class='col-md-12'>
+				<input type='submit' value='Upload' class='btn btn-info' />
+			</div>
+		</div>
+	</form>
+	<form class='form-horizontal' method='post' id='form-upload-profile' style='display: none; '
+		action='https://writingerrands.com/uploads.php'>
+		<div class='form-group'>
+			<label class='col-md-0'></label>
+			<div class='col-md-12 '>
+
+
+				<input type='file' name='profile-upload-pic' value='' class='form-control'
+					id='triggered-profile-upload' /></div>
+		</div>
+
+
+		<div class='form-group'>
+			<label class='col-md-0'></label>
+			<div class='col-md-12'>
+				<input type='submit' value='Upload' class='btn btn-info' />
+			</div>
+		</div>
+	</form>
+	<form class='form-horizontal' method='post' id='new-profile-upload-form' style='display: none;'
+		action='https://writingerrands.com/uploads.php'>
+		<div class='form-group'>
+			<label class='col-md-0'></label>
+			<div class='col-md-12 '>
+
+
+				<input type='file' name='new-profile-upload-pic' value='' class='form-control'
+					id='triggered-new-profile-upload-pic' /></div>
+		</div>
+
+
+		<div class='form-group'>
+			<label class='col-md-0'></label>
+			<div class='col-md-12'>
+				<input type='submit' value='Upload' class='btn btn-info' />
+			</div>
+		</div>
+	</form>
+	<form class='form-horizontal' method='post' id='sample-form-up-loader' style='display: none; '
+		action='https://writingerrands.com/uploads.php'>
+		<div class='form-group'>
+			<label class='col-md-0'></label>
+			<div class='col-md-12 '>
+
+
+				<input type='file' name='file-order-sample-upload' value='' class='form-control'
+					id='triggered-sample-doc-up-loader' /></div>
+		</div>
+
+
+		<div class='form-group'>
+			<label class='col-md-0'></label>
+			<div class='col-md-12'>
+				<input type='submit' value='Upload' class='btn btn-info' />
+			</div>
+		</div>
+	</form>
+	<div id="profile-cropper" data-show="dialog">
+		<div class="dialog-content">
+			<div class="dialog-content-nicer">
+				<div class="dialog-header">
+					<div class="dialog-header-nicer">
+						<div class="close" data-zoom-out="dialog" data-close="#profile-cropper">&times;</div>
+						<h3><span class="chat-header">Crop Selected Profile Picture</span></h3>
+					</div>
+				</div>
+				<div class="dialog-body">
+					<div class="dialog-body-nicer">
+						<center>
+							<button class='btn btn-info' id='upload-cropped-image'>UPLOAD CROPPED IMAGE</button>
+							<p>Only click button above after you are satsfied with cropping. Make sure you crop the
+								image to save memory and to make profile pic professinal</p>
+							<br /><br />
+							<div>
+								<img src='#' id='image-cropper' style='max-width: 100%; display: block; ' />
+							</div>
+						</center>
+					</div>
+				</div>
+				<div class="dialog-footer">
+					<div class="dialog-footer-nicer">
+						Writing Errands &copy; 2021
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<style type="text/css">
+		.marketing-popup-overlay {
+			background: rgba(0, 0, 0, 0.5);
+			position: fixed;
+			right: 0;
+			left: 0;
+			top: 0;
+			bottom: 0;
+			display: none;
+			z-index: 9999999999999999999999999;
+		}
+
+		.marketing-popup-main {
+			background: url("images/exit-popup-bg.jpg");
+			width: 400px;
+			text-align: center;
+			position: absolute;
+			left: 35%;
+			top: 150px;
+			padding: 0 20px;
+			border: 3px solid #373737;
+			padding-bottom: 20px;
+		}
+
+		.marketing-popup-header,
+		.marketing-popup-body {
+			padding: 10px 0;
+		}
+
+		.marketing-popup-header .close {
+			font-weight: bold;
+			opacity: 0.5 !important;
+			font-size: 50px;
+			margin-bottom: 15px;
+		}
+
+		.marketing-popup-header .close:hover {
+			opacity: 0.9 !important;
+		}
+
+		.marketing-popup-body div {
+			margin-bottom: 25px;
+		}
+
+		.marketing-popup-body h3.marketing-header {
+			margin-bottom: 20px;
+			text-transform: uppercase;
+			font-weight: 700;
+			color: #0190EF;
+		}
+
+		.marketing-popup-body a {
+			display: inline-block;
+			padding: 7px 35px;
+			text-decoration: none !important;
+			background: #0291F0;
+			color: #FFF;
+			text-transform: uppercase;
+		}
+
+		.marketing-popup-body h4 {
+			font-weight: 700;
+		}
+
+		.item {
+			min-height: 400px;
+			margin-left: 150px;
+		}
+	</style>
+	<script type="text/javascript">
+		$(function () {
+			// start to show the pop up
+			showPopup();
+			// close
+			clickE(".marketing-popup-header .close", 1);
+		});
+
+		function clickE(element, type) {
+			$("body").on("click", element, function () {
+				afterClick(type);
+			});
+
+			function afterClick(type) {
+				if (type == 1) {
+					// close the marketing pop up
+					$(".marketing-popup-overlay").fadeOut("slow");
+					$(".marketing-popup-main").addClass("animated fadeOutDownBig").removeClass("fadeInDownBig");
+					$("body").removeClass("open-customs");
+				}
+			}
+		}
+
+		function showPopup() {
+			var time = 0;
+
+			function count() {
+				var id = setTimeout(count, 1000);
+				if (time == 5) {
+					clearTimeout(id);
+					revealPopup();
+				}
+				time++;
+			}
+			count();
+		}
+
+		function revealPopup() {
+			var myPage = window.location.href;
+			if (myPage.indexOf("order.html") >= 0) {
+				return;
+			}
+			$(".marketing-popup-overlay").fadeIn("slow");
+			$(".marketing-popup-main").removeClass("fadeOutDownBig").addClass("animated fadeInDownBig");
+			$("body").addClass("open-customs");
+		}
+	</script>
+	<!--
+					<div class="marketing-popup-overlay">
+							<div class="marketing-popup-main">
+									<div class="marketing-popup-header">
+											<div class="close">&times;</div>
+									</div>
+									<div class="marketing-popup-body">
+											<h3 class="marketing-header">Get The Best Price For Your Work</h3>
+											<div>
+													<h4>5000+ EXPERTS</h4>
+													<p>ONLINE TO HELP YOU 24X7</p>
+											</div>
+											<div>
+													<h4>GUARANTEED GRADE</h4>
+													<p>OR GET MONEY BACK!</p>
+											</div>
+											<div>
+													<h4>RATED 4.9/5</h4>
+													<p>OUT OF 14001 REVIEWS</p>
+											</div>
+											<a href='order.php'>LEARN MORE</a>
+									</div>
+							</div>
+					</div>	 -->
+	<div id="writer-payment-help" data-show="dialog" data-zoom-out="dialog" data-close="#writer-payment-help">
+		<div class="dialog-content">
+			<div class="dialog-content-nicer">
+				<div class="dialog-header">
+					<div class="dialog-header-nicer">
+						<div class="close" data-zoom-out="dialog" data-close="#writer-payment-help">&times;</div>
+						<h3>Writer Paymenet Help</h3>
+					</div>
+				</div>
+				<div class="dialog-body">
+					<div class="dialog-body-nicer">
+						<div>
+							<h2>How to pay writers</h2>
+							How to pay writers or how the system is designed to handle writers payments<br /><br />
+							You will need to cick pay button to pay a certain writer, the dialog will reveal the payment
+							method and payment id, along with orders that are awaiting to be paid<br /><br />
+							Then you will need to use the mode of payment for that writer and send them payment. After
+							paying them, click <strong>Clear Balance</strong> button<br />
+							you must at all times follow these instuctions<br /><br />
+							<ul>
+								<li>Click Pay Button</li>
+								<li>View the mode of payment and payment id for that specific mode of payment</li>
+								<li>Review orders, how client paid and how writer is being paid for a given order</li>
+								<li>If you're satsfied with the invoice, pay the writer</li>
+								<li>After paying the writer, come back and click <strong>Clear Balance</strong></li>
+							</ul>
+							If you fail to click clear balance, you may end up paying a given writer twice, so you must
+							be careful and take your time<br />
+						</div>
+					</div>
+				</div>
+				<div class="dialog-footer">
+					<div class="dialog-footer-nicer">
+						Writing Errands &copy; 2021
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="order-details-popup" data-show="dialog" data-zoom-out="dialog" data-close="#order-details-popup">
+		<div class="dialog-content">
+			<div class="dialog-content-nicer">
+				<div class="dialog-header">
+					<div class="dialog-header-nicer">
+						<div class="close" data-zoom-out="dialog" data-close="#order-details-popup">&times;</div>
+						<h3>Order Details</h3>
+					</div>
+				</div>
+				<div class="dialog-body">
+					<div class="dialog-body-nicer">
+						<div class="order-details-popup">
+						</div>
+					</div>
+				</div>
+				<div class="dialog-footer">
+					<div class="dialog-footer-nicer">
+						Writing Errands &copy; 2021
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="learn-more-budget-agreement" data-show="dialog">
+		<div class="dialog-content">
+			<div class="dialog-content-nicer">
+				<div class="dialog-header">
+					<div class="dialog-header-nicer">
+						<div class="close" data-zoom-out="dialog" data-close="#learn-more-budget-agreement">&times;
+						</div>
+						<h3>Budget Agreement</h3>
+					</div>
+				</div>
+				<div class="dialog-body">
+					<div class="dialog-body-nicer">
+						<center>
+							Hello Guest User, Before proceeding with the order or paying for it, you will be required to
+							agree on the final budget with management.<br /><br />
+							This is so to make sure that everything is handled professionally. If we agree on your
+							current budget, then you will be allowed to pay for this order with your current budget, if
+							we agree on a different budget then managment is going to change the final
+							budget.<br /><br />
+							Final Budget will be as per your agreement with management.<br /><br />
+							Please click on the budget agreement button, to start the chat with management. You may ask
+							them their quote after revewing your task.<br /><br /> <br />
+							<strong>Writing Errands PLC &copy; 2021</strong>
+						</center>
+					</div>
+				</div>
+				<div class="dialog-footer">
+					<div class="dialog-footer-nicer">
+						Writing Errands &copy; 2021
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="file-downloader-dialog-data" data-show="dialog" data-zoom-out="dialog"
+		data-close="#file-downloader-dialog-data">
+		<div class="dialog-content">
+			<div class="dialog-content-nicer">
+				<div class="dialog-header">
+					<div class="dialog-header-nicer">
+						<div class="close" data-zoom-out="dialog" data-close="#file-downloader-dialog-data">&times;
+						</div>
+						<h3>Files</h3>
+					</div>
+				</div>
+				<div class="dialog-body">
+					<div class="dialog-body-nicer">
+						<div class='download-file-didalog'></div>
+					</div>
+				</div>
+				<div class="dialog-footer">
+					<div class="dialog-footer-nicer">
+						Writing Errands &copy; 2021
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="bids-data-details" data-show="dialog" data-zoom-out="dialog" data-close="#bids-data-details">
+		<div class="dialog-content">
+			<div class="dialog-content-nicer">
+				<div class="dialog-header">
+					<div class="dialog-header-nicer">
+						<div class="close" data-zoom-out="dialog" data-close="#bids-data-details">&times;</div>
+						<h3>Bids Details</h3>
+					</div>
+				</div>
+				<div class="dialog-body">
+					<div class="dialog-body-nicer">
+						<div class='bids-display-data'></div>
+					</div>
+				</div>
+				<div class="dialog-footer">
+					<div class="dialog-footer-nicer">
+						Writing Errands &copy; 2021
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="file-uploader-dialog" data-show="dialog">
+		<div class="dialog-content" style="background-color: #0291f087">
+			<div class="dialog-content-nicer">
+				<div class="dialog-header">
+					<div class="dialog-header-nicer">
+						<div class="close" data-zoom-out="dialog" data-close="#file-uploader-dialog">&times;</div>
+						<h3>Upload Your Files</h3>
+					</div>
+				</div>
+				<div class="dialog-body">
+					<div class="dialog-body-nicer">
+						<div class="uploader-ad-files">
+							<center><a href='#' class="uploader-trigger">Add Files</a></center>
+						</div>
+						<div class="uploader-files-preview">
+							<center class='preview-centered'>
+								<img class="uploader-trigger img-uploader-dialog" src='images/upload-file-512.png'
+									style="height: 100px;" alt='Writing Errands file uploader' />
+								<h4>Your Files Will be Previewed Here</h4>
+							</center>
+						</div>
+						<div class="uploader-append">
+							<center><a href='#' class="uploader-trigger the-add-more-files-link"
+									style='display: none;'>Add More Files</a></center>
+						</div>
+						<br /><br />
+						<div class="done-uploading-files pull-right" style="margin-right: 30px;">
+							<button href='#' data-zoom-out='dialog' data-close='#file-uploader-dialog'
+								class="btn btn-info">Done</button>
+						</div>
+						<br /><br />
+					</div>
+				</div>
+				<div class="dialog-footer">
+					<div class="dialog-footer-nicer">
+						Writing Errands &copy; 2021
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- <div id='loading' data-show='dialog'>
+<div class="dialog-content">
+	<div class="dialog-content-nicer" style="background: #31708fed;">
+		<div class="dialog-body">
+			<div class="dialog-body-nicer">
+				<center><img src="q-software/q-icons/loading.gif" /></center>
+				<center>
+				<h3>Please Wait...</h3>
+				</center>
+			</div>
+		</div>
+	</div>
+</div>
+</div> -->
+	<div id="success" data-show="data" data-zoom-out="dialog" data-close="#success">
+		<div class="dialog-content">
+			<div class="dialog-body" style="text-align: center; color: green;">
+				<div class="close" data-zoom-out="dialog" data-close="#success">&times;</div>
+				<img src="q-software/q-icons/success.png" style="float: left;" />
+				<h3>Loading Please Wait....</h3>
+			</div>
+		</div>
+	</div>
+
+	<div id='error' data-show='dialog' data-zoom-out='dialog' data-close='#error'>
+		<div class="dialog-content">
+			<div class="dialog-content-nicer" style="background: #FFFF02;">
+				<div class="dialog-body">
+					<div class="dialog-body-nicer">
+						<div class="close" data-zoom-out='dialog' data-close='#error'>&times;</div>
+						<center><img src='q-software/q-icons/alert-triangle-red-32.png' style="float: left;" />
+							<h3>Something went wrong</h3>
+						</center>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<audio controls id='new-message-ring' style='display: none;'>
+		<source src="q-software/audios/Windows%20Notify%20Calendar.wav" type="audio/ogg">
+		<source src="q-software/audios/Windows%20Notify%20Calendar.wav" type="audio/mpeg">
+		<source src="q-software/audios/Windows%20Notify%20Calendar.wav" type="audio/wav">
+		Your browser does not support the audio tag.
+	</audio>
+	<audio controls id='message-arrived' style='display: none;'>
+		<source src="q-software/audios/chord.wav" type="audio/ogg">
+		<source src="q-software/audios/chord.wav" type="audio/mpeg">
+		<source src="q-software/audios/chord.wav" type="audio/wav">
+		Your browser does not support the audio tag.
+	</audio>
+	<audio controls id='action-message-ring' style='display: none;'>
+		<source src="q-software/audios/time-is-now.mp3" type="audio/ogg">
+		<source src="q-software/audios/time-is-now.mp3" type="audio/mpeg">
+		<source src="q-software/audios/time-is-now.mp3" type="audio/wav">
+		Your browser does not support the audio tag.
+	</audio>
+	<audio controls id='writers-message-ring' style='display: none;'>
+		<source src="q-software/audios/writers_piece-of-cake.html" type="audio/ogg">
+		<source src="q-software/audios/writers_piece-of-cake.html" type="audio/mpeg">
+		<source src="q-software/audios/writers_piece-of-cake.html" type="audio/wav">
+		Your browser does not support the audio tag.
+	</audio>
+	<audio controls id='writers-message-arrived' style='display: none;'>
+		<source src="q-software/audios/writers_swiftly.html" type="audio/ogg">
+		<source src="q-software/audios/writers_swiftly.html" type="audio/mpeg">
+		<source src="q-software/audios/writers_swiftly.html" type="audio/wav">
+		Your browser does not support the audio tag.
+	</audio>
+	<!-- Starting the footer -->
+	<div class="container-fluid l-footer-main">
+		<div class="row">
+			<div class="col-md-2"></div>
+			<div class="col-md-10">
+				<div class="l-footer">
+					<ul>
+						<li><a href='#'>About Us</a></li>
+						<li><a href='#'>Blog</a></li>
+						<li><a href='contact-us.html'>Contact Us</a></li>
+						<li><a href='#'>Services</a></li>
+						<li><a href='#'>Samples</a></li>
+						<li><a href='#'>Terms of Service</a></li>
+						<li><a href='#'>Payments Policy</a></li>
+						<li><a href='#'>Refund Policy </a>
+						<li>
+						<li><a href='#'>Plagiarism Policy </a>
+						<li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<form id='upload-all-files-form' method="post" action="https://writingerrands.com/uploads.php"
+		enctype="multipart/form-data" style="display: none;">
+		<input type="file" name="uploadFiles[]" multiple="multiple" class="uploade-them-all-triggered"><br /><br />
+		<input type="submit" value="upload">
+	</form>
+
+
+
+</body>
+
+</html>

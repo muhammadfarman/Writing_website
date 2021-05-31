@@ -1,0 +1,134 @@
+
+
+a{
+	color: #0291F0;
+}
+
+a:hover{
+	color: #0291F0;
+}
+
+.main-header-wrapper{
+	position: relative;
+}
+
+.header-wrapper{
+	position: fixed;
+	z-index: 999;
+	right: 0;
+	left: 0;
+}
+
+.header-top-title{
+	#background: #0291F0;
+	background: #fff;
+	z-index: 999;
+	font-weight: bolder;
+	text-align: center;
+	padding: 10px 0; 
+	font-size: 16px;
+	position: relative;
+}
+
+
+.header-top-title h1,
+.header-top-title a{
+	margin: 0 !important;
+	padding: 0 !important;
+	color: #FFF;
+	text-decoration: none !important;
+}
+
+.header-phone{
+	color: #FFF;
+	font-weight: bold;
+	padding-top: 10px;
+}
+
+.main-header-wrapper .header-top-title,
+.main-header-wrapper .real-nav{
+    background-color: #0291DD;
+    background-color: rgb(2 145 240 / 92%);
+    color: #fff;
+}
+
+
+.main-header-wrapper .header-top-title h1,
+.main-header-wrapper .header-top-title a{
+	margin: 0 !important;
+	padding: 0 !important;
+	color: #fff;
+	text-decoration: none !important;
+}
+
+
+.main-header-wrapper .header-phone{
+	color: #fff;
+	font-weight: bold;
+	padding-top: 10px;
+}
+
+
+.real-nav{
+	background: #fff;
+	#background: #0291F0;
+	#background: #0291F0 ;
+	border-bottom:  0px !important;
+	border-right:  0px !important;
+	border-left:  0px !important;
+	border-radius: 0 !important;
+	z-index: 99;
+	padding-top: 7px;
+	margin-bottom: 0 !important;
+	border-top: 1px solid gray;
+	-webkit-box-shadow: none !important;
+	-moz-box-shadow: none !important;
+	box-shadow: none !important;
+
+}
+
+
+
+.header-alt{
+	background: #fff;
+}
+
+
+.navbar-brand{
+	color: #e1e1e1 !important; 
+}
+
+.real-nav .navbar-nav li a{
+	color: #e1e1e1;
+	font-weight: bold; 
+}
+
+.real-nav .navbar-nav :hover{
+	/*background-color: #0291DD!important;*/
+	color: #e1e1e1 !important; 
+}
+
+.writing-estate-special-btn li a:hover {
+   /* color: #0291DD!important;*/
+    color: #fff!important;
+}
+
+
+.real-nav .navbar-nav li a:hover > .new-message-count{
+	color: #fff; 
+}
+
+
+
+.main-header-wrapper .real-nav .navbar-nav li a{
+	color: #fff;
+	font-weight: bold;
+}
+
+
+.main-header-wrapper .real-nav .navbar-nav li a:hover{
+	background-color: transparent!important;
+	color: #ededed;
+	
+}
+

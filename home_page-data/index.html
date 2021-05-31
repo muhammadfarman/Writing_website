@@ -1,0 +1,3376 @@
+<script>
+	function updateFeaturedWriterStatus() {
+		jQuery.ajax({
+			url: 'update_featured_writer_status.php',
+			success: function (result) {
+				jQuery('#update_status').html(result);
+				// console.log('updated');
+			}
+		})
+	}
+	setInterval(function () {
+		updateFeaturedWriterStatus();
+	}, 10000);
+</script>
+<!DOCTYPE html>
+<html>
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+
+<head>
+	<title>Writing Errands - Get quality writing service and assignments help from Writing Errands at home_page-data
+	</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="icon" type="image/png" href="images/favicon-logo.png">
+	<meta name="theme-color" content="#ffffff">
+	<!-- css -->
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+	<link rel="stylesheet" type="text/css" href="css/q.css" />
+	<link rel="stylesheet" type="text/css" href="css/main.css" />
+	<link rel="stylesheet" type="text/css" href="style.css" />
+	<link rel="stylesheet" type="text/css" href="css/responsive.css">
+	<link rel="stylesheet" type="text/css" href="css/cropper_.html">
+	<script src="../cdn.ckeditor.com/4.7.0/full-all/ckeditor.js"></script>
+	<script src="js/jquery.js"></script>
+	<script src="js/bootstrap.js" defer="defer"></script>
+	<script src="js/form-plugin.js" defer="defer"></script>
+	<script src="js/q.js" defer="defer"></script>
+	<!-- <script src="./js/chat.js" defer="defer"></script> -->
+	<script src="js/autosize.js" defer="defer"></script>
+	<script src="js/uploder.js" defer="defer"></script>
+	<script src="js/cropper.js"></script>
+	<script>
+		$(function () {
+			detectMobile();
+			//announcementsScaling();
+			closeAnnouceMent();
+			costCalculator()
+			//proceedWithOrder();
+			starsPreview();
+			initP()
+			checkLoggedIn();
+			initDepo();
+			//uploadOderDocs(); function deleted
+			cookieRealTime();
+			search();
+			sidebarScrolling();
+			viewBids();
+		});
+
+		function sidebarScrolling() {
+			$(".sidebar-area").mouseenter(function () {
+				$(this).css("overflow-y", "scroll");
+			})
+			$(".sidebar-area").mouseleave(function () {
+				// make sure you scroll it up side
+				$(this).css("overflow-y", "hidden");
+			})
+		}
+
+		function checkLoggedIn() {
+			//console.log($.cookie("w-estate"));
+		}
+
+		function initDepo() {
+			$("#init-deposit").click(function () {
+				$amount = $("[name='d-amount']").val();
+				if ((parseInt($amount) < 2) || $amount == "") {
+					error("Amount must be at least USD 3", true);
+					return;
+				}
+				loading("Initializing Deposit Process... ", true)
+				$.ajax({
+					url: "actions.php",
+					data: getAjaxData(Array("action", "amount"), Array("initDeposit", $amount)),
+					type: "post",
+					cache: false,
+					success: function (data) {
+						console.log(data);
+						$("[name='amount']").val($amount);
+						$(".submit-paypal-form").trigger("click");
+					},
+					error: function () {
+						loading("", false);
+						error("Network error try again later", true);
+					}
+				});
+			});
+		}
+
+		function initP() {
+			$("body").on("click", ".initialize-paypal-payment", function () {
+				//alert("nice");
+				var id = $(this).attr('data-id');
+				loading("Initializing Payment...", true);
+				$.ajax({
+					url: "actions.php",
+					data: getAjaxData(Array("action", "orderId"), Array("initPayment", id)),
+					type: "post",
+					cache: false,
+					success: function (data) {
+						//loading("", false);
+						//console.log("payments ready to be made");
+						$("." + id + "").trigger("click");
+
+					},
+					error: function () {
+						loading("", false)
+						error("Network error while trying to initialize payment, please try again after solving your connections problems",
+							true);
+					}
+				});
+			});
+		}
+
+		function starsPreview() {
+			$("[name='r-stars']").change(function () {
+				var stars = $(this).val();
+				if (stars == "") {
+					$(".stars-priview").html("");
+					return;
+				}
+				var starsImage = "";
+				var start = 0;
+				while (start < parseInt(stars)) {
+					starsImage += "<div class='review-stars'><span class='ri ri-star'></span></div>";
+					start++;
+				}
+				var emptyStars = 5 - parseInt(stars);
+				var i = 0;
+				while (i < emptyStars) {
+					starsImage += "<div class='review-stars'><span class='ri ri-star-empty'></span></div>";
+					i++;
+				}
+				$(".stars-priview").html(starsImage);
+			});
+		}
+
+		function detectMobile() {
+			$(window).resize(function () {
+				var systemWidth = $(this).width();
+				//console.log(systemWidth);
+				if (systemWidth <= 974) {
+					$(".home-page-spacer").hide();
+					$(".sidebar-area").hide();
+					$(".mobile-sidebar").show();
+				} else {
+					$(".home-page-spacer").show();
+					$(".sidebar-area").show();
+					$(".mobile-sidebar").hide();
+				}
+			});
+			var width = $(window).width();
+			if (width <= 974) {
+				$(".home-page-spacer").hide();
+				$(".sidebar-area").hide();
+				$(".mobile-sidebar").show();
+			} else {
+				$(".mobile-sidebar").hide();
+				$(".home-page-spacer").show();
+				$(".sidebar-area").show();
+			}
+
+			function realTime() {
+				var time = 0;
+				setTimeout(realTime, 100);
+				if ($(".sidebar-area").is(":visible")) {
+					$(".close-sidebar").show();
+					$(".open-sidebar").hide();
+				} else {
+					$(".close-sidebar").hide();
+					$(".open-sidebar").show();
+				}
+				time++;
+			}
+			realTime();
+			$(".open-sidebar").click(function () {
+				$(".sidebar-area").removeClass("animated slideOutLeft");
+				$(".sidebar-area").fadeIn().addClass("animated slideInLeft");
+			});
+			$(".close-sidebar").click(function () {
+				$(".sidebar-area").removeClass("animated slideInLeft");
+				$(".sidebar-area").fadeOut().addClass("animated slideOutLeft");
+			});
+			// mobile notifications
+			$(window).resize(function () {
+				var systemWidth = $(this).width();
+				//console.log(systemWidth);
+				if (systemWidth <= 750) {
+					$("#mobile-notifications").show();
+				} else {
+					$("#mobile-notifications").hide();
+				}
+			});
+			var mobileTabletWidth = $(window).width();
+			if (mobileTabletWidth <= 750) {
+				$("#mobile-notifications").show();
+			} else {
+				$("#mobile-notifications").hide();
+			}
+		}
+
+		function announcementsScaling() {
+			var time = 0;
+
+			function realTime() {
+				setTimeout(realTime, 1000);
+				console.log("time is: " + time);
+				if (time == 2) {
+					if ($(".announcements").is(":visible")) {
+						$(".writing-estate-calculator").css("margin-top", "180px");
+						$(".writing-estate-front-hero h1").css("margin-top", "250px");
+					} else {
+						$(".writing-estate-calculator").css("margin-top", "100px");
+						$(".writing-estate-front-hero h1").css("margin-top", "200px");
+					}
+					time = 0;
+				}
+				time++;
+			}
+			realTime();
+		}
+
+		function closeAnnouceMent() {
+			$(".close-announcement").click(function () {
+				$(".announcements").slideUp();
+			});
+		}
+
+		function costCalculator() {
+			var urgentHours = $("#urgent-cpp").val();
+			var mUrgentHours = $("#m-urgent-cpp").val();
+			levelChange(urgentHours, mUrgentHours);
+			urgencyChange(urgentHours, mUrgentHours);
+			pagesChange(urgentHours, mUrgentHours);
+		}
+
+		function getNumberOfSlides() {
+			var slides = $("[name='calc-slides']").val();
+			if (slides == "") {
+				return 0;
+			}
+			return slides;
+		}
+
+		function getSlidesPrice() {
+			var slides = getNumberOfSlides();
+			var pricePerSlide = parseInt(slides) * parseFloat($("#slide-cost").val());
+			return pricePerSlide;
+		}
+
+		function showOpenExplainerLink() {
+			$(".explain-price-opner").fadeIn();
+		}
+
+		function hideOPenExplainerLink() {
+			$(".explain-price-opner").fadeOut();
+		}
+
+		function changeInputNumber(urgentHours, mUrgentHours) {
+			$("[name='calc-slides']").bind('keyup mouseup', function () {
+				var spaces = $(this).val();
+				var urgency = $("[name=\"cal-urgency\"]").val();
+				var pages = $("[name=\"calc-page-numbers\"]").val();
+				var level = $("[name='cal-level']").val();
+				if (level == "" || urgency == '0' || urgency == 0) {
+					$(".calc-total").html("0 USD");
+					//console.log(urgentHours+' '+mUrgentHours)
+					$("[name='calc-price']").val(0);
+				} else {
+					//showOpenExplainerLink();
+					if (parseInt(urgency) <= parseInt(urgentHours)) {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 0)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 0)));
+						console.log("urgent")
+					} else if ((parseInt(urgency) > parseInt(urgentHours)) && (parseInt(urgency) <= parseInt(
+							mUrgentHours))) {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 1)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 1)));
+					} else {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 2)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 2)));
+					}
+				}
+			});
+		}
+
+		function spacesChange(urgentHours, mUrgentHours) {
+			// new calc
+			// consider spaces
+			$("[name='cal-spaces']").change(function () {
+				var spaces = $(this).val();
+				var urgency = $("[name=\"cal-urgency\"]").val();
+				var pages = $("[name=\"calc-page-numbers\"]").val();
+				var level = $("[name='cal-level']").val();
+				if (level == "" || urgency == '0' || urgency == 0) {
+					$(".calc-total").html("0 USD");
+					//console.log(urgentHours+' '+mUrgentHours)
+					$("[name='calc-price']").val(0);
+					hideOPenExplainerLink();
+				} else {
+					//showOpenExplainerLink();
+					if (parseInt(urgency) <= parseInt(urgentHours)) {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 0)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 0)));
+						console.log("urgent")
+					} else if ((parseInt(urgency) > parseInt(urgentHours)) && (parseInt(urgency) <= parseInt(
+							mUrgentHours))) {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 1)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 1)));
+					} else {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 2)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 2)));
+					}
+				}
+			});
+		}
+
+		function levelChange(urgentHours, mUrgentHours) {
+			spacesChange(urgentHours, mUrgentHours);
+			changeInputNumber(urgentHours, mUrgentHours);
+			// prices
+			$("[name='cal-level']").change(function () {
+				var level = $(this).val();
+				var urgency = $("[name=\"cal-urgency\"]").val();
+				var pages = $("[name=\"calc-page-numbers\"]").val();
+				//console.log(level+' '+urgency+' '+pages);
+				if (level == "" || urgency == '0' || urgency == 0) {
+					$(".calc-total").html("0 USD");
+					//console.log(urgentHours+' '+mUrgentHours)
+					$("[name='calc-price']").val(0);
+					hideOPenExplainerLink();
+				} else {
+					//showOpenExplainerLink();
+					if (parseInt(urgency) <= parseInt(urgentHours)) {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 0)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 0)));
+						console.log("urgent")
+					} else if ((parseInt(urgency) > parseInt(urgentHours)) && (parseInt(urgency) <= parseInt(
+							mUrgentHours))) {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 1)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 1)));
+					} else {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 2)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 2)));
+					}
+				}
+			});
+			$("[name='cal-urgency']").change(function () {
+				var level = $("[name='cal-level']").val();
+				var urgency = $("[name=\"cal-urgency\"]").val();
+				var pages = $("[name=\"calc-page-numbers\"]").val();
+				//console.log(level+' '+urgency+' '+pages);
+				if (level == "" || urgency == '0' || urgency == 0) {
+					$(".calc-total").html("0 USD");
+					//console.log(urgentHours+' '+mUrgentHours)
+					$("[name='calc-price']").val(0);
+					hideOPenExplainerLink();
+				} else {
+					//showOpenExplainerLink();
+					if (parseInt(urgency) <= parseInt(urgentHours)) {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 0)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 0)));
+					} else if ((parseInt(urgency) > parseInt(urgentHours)) && (parseInt(urgency) <= parseInt(
+							mUrgentHours))) {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 1)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 1)));
+					} else {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 2)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 2)));
+					}
+				}
+			});
+			$("[name='calc-page-numbers']").change(function () {
+				var level = $("[name='cal-level']").val();
+				var urgency = $("[name=\"cal-urgency\"]").val();
+				var pages = $("[name=\"calc-page-numbers\"]").val();
+				//console.log(level+' '+urgency+' '+pages);
+				if (level == "" || urgency == '0' || urgency == 0) {
+					$(".calc-total").html("0 USD");
+					//console.log(urgentHours+' '+mUrgentHours)
+					$("[name='calc-price']").val(0);
+					hideOPenExplainerLink();
+				} else {
+					//showOpenExplainerLink();
+					if (parseInt(urgency) <= parseInt(urgentHours)) {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 0)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 0)));
+					} else if ((parseInt(urgency) > parseInt(urgentHours)) && (parseInt(urgency) <= parseInt(
+							mUrgentHours))) {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 1)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 1)));
+					} else {
+						$(".calc-total").html(getTheDisplayPrice(getCalculatedPrice(level, pages, 2)));
+						$("[name='calc-price']").val(getPriceWithDiscount(getCalculatedPrice(level, pages, 2)));
+					}
+				}
+			});
+		}
+
+		function urgencyChange(urgentHours, mUrgentHours) {
+			// prices
+			$("#cal-level").change(function () {});
+		}
+
+		function pagesChange(urgentHours, mUrgentHours) {
+			// prices
+			$("#p").change(function () {});
+		}
+
+		function explainPrice(supposedPrice, priceAfterDiscount, offer, slides, slidePrice, spacing) {
+			if (priceAfterDiscount == "0") {
+				error("Please calculate your price first. System will explain your price", true);
+				$(".price-explainer-display").html(
+					"<div class='alert alert-danger'>Please calculate your price using the price calculator and the system is going to explain that price for you</div>"
+					);
+
+			} else {
+				var data = "<div class='explain-price'>";
+				data += "<span class='price-explain-meta-data'>Usual Price: <span><s>$" + supposedPrice +
+				"</s></span></span>";
+				data += "<span class='price-explain-meta-data'>Price After Discount: <span>$" + priceAfterDiscount +
+					"</span></span>";
+				data += "<span class='price-explain-meta-data'>Discount: <span>" + offer + "% off</span></span>";
+				data += "<span class='price-explain-meta-data'>Number of Slides: <span>" + slides + "</span></span>";
+				data += "<span class='price-explain-meta-data'>Slide Pirce each @ $" + $("#slide-cost").val() + ": <span>$" +
+					slidePrice + "</span></span>";
+				data += "<span class='price-explain-meta-data'>Spacing<span>" + spacing + "</span></span>";
+				data += "<span class='mathematical-equal'></span>";
+				data += "<span class='price-explain-meta-data-total'>What to Pay: <span>$" + priceAfterDiscount +
+					"</span></span>";
+				data += "<span class='mathematical-equal'></span>";
+				data += "</div>";
+				$(".price-explainer-display").html(data);
+			}
+		}
+
+		function getCalculatedPrice(level, pages, status) {
+			var price;
+			var spaces = $("[name='cal-spaces']").val();
+			var slidePrice = getSlidesPrice();
+			//alert(slidePrice);
+			if (status == 0) {
+				// urgent price
+				if (level == "High School") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#hu").val()) * parseInt(pages)) + slidePrice;
+					} else {
+						price = (parseFloat($("#hu").val()) * parseInt(pages) * 2) + slidePrice;
+					}
+				} else if (level == "College") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#cu").val()) * parseInt(pages)) + slidePrice;
+					} else {
+						price = (parseFloat($("#cu").val()) * parseInt(pages) * 2) + slidePrice;
+					}
+				} else if (level == "Undergraduate") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#cu").val()) * parseInt(pages)) + slidePrice;
+					} else {
+						price = (parseFloat($("#cu").val()) * parseInt(pages) * 2) + slidePrice;
+					}
+				} else if (level == "Masters") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#mu").val()) * parseInt(pages)) + slidePrice;
+					} else {
+						price = (parseFloat($("#mu").val()) * parseInt(pages) * 2) + slidePrice;
+					}
+				} else if (level == "PHD") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#pu").val()) * parseInt(pages)) + slidePrice;
+					} else {
+						price = (parseFloat($("#pu").val()) * parseInt(pages) * 2) + slidePrice;
+					}
+				}
+			} else if (status == 1) {
+				// murgent price
+				if (level == "High School") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#hm").val()) * parseInt(pages)) + slidePrice;
+					} else {
+						price = (parseFloat($("#hm").val()) * parseInt(pages) * 2) + slidePrice;
+					}
+				} else if (level == "College") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#cm").val()) * parseInt(pages)) + slidePrice;
+					} else {
+						price = (parseFloat($("#cm").val()) * parseInt(pages) * 2) + slidePrice;
+					}
+				} else if (level == "Undergraduate") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#cm").val()) * parseInt(pages)) + slidePrice;
+					} else {
+						price = (parseFloat($("#cm").val()) * parseInt(pages) * 2) + slidePrice;
+					}
+				} else if (level == "Masters") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#mm").val()) * parseInt(pages)) + slidePrice;
+					} else {
+						price = (parseFloat($("#mm").val()) * parseInt(pages) * 2) + slidePrice;
+					}
+				} else if (level == "PHD") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#pm").val()) * parseInt(pages)) + slidePrice;
+					} else {
+						price = (parseFloat($("#pm").val()) * parseInt(pages) * 2) + slidePrice;
+					}
+				}
+			} else if (status == 2) {
+				// normal price
+				if (level == "High School") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#hn").val()) * parseInt(pages)) + slidePrice;
+					} else {
+						price = (parseFloat($("#hn").val()) * parseInt(pages) * 2) + slidePrice;
+					}
+				} else if (level == "College") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#cn").val()) * parseInt(pages)) + slidePrice;
+					} else {
+						price = (parseFloat($("#cn").val()) * parseInt(pages) * 2) + slidePrice;
+					}
+				} else if (level == "Undergraduate") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#cn").val()) * parseInt(pages)) + slidePrice;
+					} else {
+						price = (parseFloat($("#cn").val()) * parseInt(pages) * 2) + slidePrice;
+					}
+				} else if (level == "Masters") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#mn").val()) * parseInt(pages)) + slidePrice;;
+					} else {
+						price = (parseFloat($("#mn").val()) * parseInt(pages) * 2) + slidePrice;
+					}
+				} else if (level == "PHD") {
+					if (spaces == "Double Spaced") {
+						price = (parseFloat($("#pn").val()) * parseInt(pages)) + slidePrice;
+					} else {
+						price = (parseFloat($("#pn").val()) * parseInt(pages) * 2) + slidePrice;;
+					}
+				}
+			}
+			showOpenExplainerLink();
+			explainPrice(truncateDecimals(price, 2), truncateDecimals(getPriceWithDiscount(price), 2), getDiscountOff(),
+				getNumberOfSlides(), truncateDecimals(getSlidesPrice(), 2), spaces);
+			//alert( truncateDecimals(55.55555, 2) )
+			return truncateDecimals(price, 2);
+		}
+		truncateDecimals = function (number, digits) {
+			var multiplier = Math.pow(10, digits),
+				adjustedNum = number * multiplier,
+				truncatedNum = Math[adjustedNum < 0 ? 'ceil' : 'floor'](adjustedNum);
+			return truncatedNum / multiplier;
+		};
+
+		function getDiscountOff() {
+			return parseInt($("#off-discount").val());
+		}
+
+		function getPriceWithDiscount(price) {
+			var off = getDiscountOff();
+			if (off == 0) {
+				return price;
+			}
+			var theDiscount = (off / 100) * price;
+			var finalPrice = price - theDiscount;
+			return truncateDecimals(finalPrice, 2);
+		}
+
+		function getTheDisplayPrice(price) {
+			var off = getDiscountOff();
+			if (off == 0) {
+				return "USD " + price;
+			} else {
+				return "<s style='color: red;'><span style='color: red;'><i>$" + price + "</i></span></s> $" +
+					getPriceWithDiscount(price) + " (" + off + "% Off)";
+			}
+
+		}
+
+		function loading(text, itShouldShow) {
+			if (itShouldShow) {
+				$("#loading").dialog("show").find("h3").html(text);
+			} else {
+				$("#loading").dialog("hide");
+			}
+		}
+
+		function success(text, itShouldShow) {
+			if (itShouldShow) {
+				$("#succcess").dialog("open").find("h3").html(text);
+			} else {
+				$("#succcess").dialog("close");
+			}
+		}
+
+		function error(text, itShouldShow) {
+			if (itShouldShow) {
+				$("#error").dialog("open").find("h3").html(text);
+			} else {
+				$("#error").dialog("close");
+			}
+		}
+
+		function getAjaxData(params, data) {
+			var dataToPass = "";
+			for (i = 0; i < params.length; i++) {
+				var totalCount = i + 1;
+				if (totalCount == params.length) {
+					dataToPass += params[i] + "=" + data[i];
+				} else {
+					dataToPass += params[i] + "=" + data[i] + "&";
+				}
+				//console.log(params[i]);
+			}
+			//console.log(dataToPass);
+			return dataToPass;
+		}
+
+		function cookieRealTime() {
+			$(window).on("focus", function () {
+				$.ajax({
+					url: "actions.php",
+					data: getAjaxData(Array("action"), Array("check-loggedin-in")),
+					type: "post",
+					cache: false,
+					success: function (data) {
+						var isLoggedIn = $("#is-logged-in").val();
+						if (data == 1 || data == "1") {
+							if (isLoggedIn == 0 || isLoggedIn == "0") {
+								loading("You just logged in from another tab. We are redirecting...",
+									true);
+								location.reload();
+							}
+							return;
+						}
+						if (data == 0 || data == "0") {
+							if (isLoggedIn == 1 || isLoggedIn == "1") {
+								loading("You logout from another tab. We are redirecting...", true);
+								location.reload();
+							}
+						}
+					},
+					error: function () {}
+				});
+			});
+			$(window).blur(function () {
+
+			})
+		}
+
+		function search() {
+			$("[name='s-order-id']").keyup(function () {
+				var dataToPass = $(this).val();
+				$.ajax({
+					url: "actions.php",
+					type: "post",
+					data: getAjaxData(Array("action", "data"), Array("search-orders", dataToPass)),
+					cache: false,
+					success: function (data) {
+						if (data == 555) {
+							loading("Something not right, we are refreshing...", true);
+							location.relaod();
+							return;
+						}
+						$(".search-results").html(data);
+						console.log("returned data is: " + data);
+					},
+					error: function () {
+						$(".search-results").html("<div class='alert alert-danger'>Network error!</div>")
+					}
+				});
+			});
+		}
+
+		function viewBids() {
+			// alert("programming is fine")
+			$(".view-bids-details").click(function () {
+				var orderId = $(this).attr("data-id");
+				loading("Please Wait", true);
+				$.ajax({
+					url: "actions.php",
+					type: "post",
+					data: getAjaxData(Array("action", "orderId"), Array("loadAdminBidsForThisOrder",
+						orderId)),
+					async: true,
+					cache: false,
+					success: function (data) {
+						loading("", false);
+						$(".bids-display-data").html(data);
+					},
+					error: function () {
+						loading("", false);
+						error("Something not right please check your internet connection", true);
+					}
+				});
+			});
+		}
+	</script>
+	<script>
+		$(function () {
+			// detect safari browswer and disable animations
+			if (!is_safari()) {
+				$("head").append('<link rel="stylesheet" type="text/css" href="css/animate.css" />');
+			}
+		});
+
+		function is_safari() {
+			var ua = navigator.userAgent.toLowerCase();
+			if (ua.indexOf('safari') != -1) {
+				if (ua.indexOf('chrome') > -1) {
+					return false;
+				} else {
+					return true; //Safari
+				}
+			}
+		}
+	</script>
+
+	<style type="text/css">
+		.dynamic-order {
+			background: #015079;
+			color: #fff;
+			border-radius: 5px;
+			min-height: 100px;
+			padding: 35px 10px;
+			-webkit-box-shadow: 0 0 10px #000;
+			box-shadow: 0 0 10px #000;
+		}
+
+		.dynamic-order .dynamic-order-1,
+		.dynamic-order .dynamic-order-2 {
+			display: none;
+		}
+
+		.dynamic-order .dynamic-order-start h3 {
+			margin-bottom: 20px;
+		}
+
+		.dynamic-order .dynamic-order-start span {
+			display: block;
+			text-align: center;
+			font-size: 17px;
+			padding: 10px 25px;
+			cursor: pointer;
+			-web-kit-user-select: none;
+			-moz-user-select: none;
+			-o-user-select: none;
+			user-select: none;
+			border-radius: 3px;
+		}
+
+		.dynamic-order .dynamic-order-start span.d-writing-service {
+			background: #0190EF;
+			margin-bottom: 15px;
+		}
+
+		.dynamic-order .dynamic-order-start span.d-other-services {
+			background: #B50000;
+		}
+
+		.back-to-services-options-btn {
+			padding: 7px 20px;
+			border: 1px solid #E1E1E1;
+			border-radius: 3px;
+			display: inline-block;
+			margin-bottom: 15px;
+			cursor: pointer;
+			user-select: none;
+		}
+
+		.writing-estate-calculator {
+			background: #015079;
+		}
+	</style>
+	<script type="text/javascript">
+		$(function () {
+			$("body").on("click", ".d-writing-service, .d-other-services, .back-to-services-options-btn",
+		function () {
+				// design for the other services
+				if ($(this).attr("class") == "d-other-services") {
+					$(this).parent().hide().removeClass("animated fadeInDownBig");
+					$(".dynamic-order-2").fadeIn().addClass("animated bounceInRight");
+					return;
+				}
+				// getting back
+				if ($(this).attr("class") == "back-to-services-options-btn") {
+					$(".dynamic-order-1").hide().removeClass("animated bounceInRight");
+					$(".dynamic-order-2").hide().removeClass("animated bounceInRight");
+					$(".dynamic-order-start").fadeIn().addClass("animated fadeInDownBig");
+					return;
+				}
+				$(this).parent().hide().removeClass("animated fadeInDownBig");
+				$(".dynamic-order-1").fadeIn().addClass("animated bounceInRight");
+				// design for writing services
+			});
+
+			proceedWithOrder();
+		});
+
+
+		function proceedWithOrder() {
+
+			$("[name='cal-urgency'], [name='cal-level'], [name='calc-page-numbers']").click(function () {
+				$(".form-response").hide();
+			});
+			$("#complete-order").click(function () {
+				var level = $("[name='cal-level']").val();
+				var urgency = $("[name='cal-urgency']").val();
+				var pages = $("[name='calc-page-numbers']").val();
+				var topic = $("[name='o-topic']").val();
+				var reference = $("[name='o-ref']").val();
+				var style = $("[name='o-style']").val();
+				var language = $("[name='o-language']").val();
+				var description = $("[name='o-description']").val();
+				var doc = $("#o-doc").val();
+				var files = $(".uploader-value-them-all").val();
+				var fileType = $("#what-uploading").val();
+				var w = $("#the-hiring-writer").val();
+				var writer;
+
+				if (w == "") {
+					writer = 0;
+				} else {
+					writer = w;
+				}
+				//alert(files);
+				//alert(language);
+				//return;
+				if (topic == "" || reference == "" || style == "" || language == "" || description == "") {
+					error("Fill in all the fields", true);
+					return;
+				}
+				if (topic.length < 5) {
+					error("Your topic is way too short", true);
+					return;
+				}
+				loading("Processing...", true);
+				var params = Array("action", "level", "urgency", "pages", "topic", "reference", "style", "language",
+					"description", "price", "files", "fileType", "writer");
+				var dataToPass = Array("addToCart", level, urgency, pages, topic, reference, style, language,
+					description, $("[name='calc-price']").val(), files, fileType, writer);
+				$.ajax({
+					url: "actions.php",
+					type: "post",
+					data: getAjaxData(params, dataToPass),
+					async: true,
+					cache: false,
+					success: function (data) {
+						loading("", false);
+						//alert(data)
+						console.log(data);
+						window.location.href = "login51ca.html?action=determineDirectionAferAddingToCart";
+					},
+					error: function () {
+						loading("", false);
+						error("Network error, please try again later", true);
+					}
+				})
+			});
+		}
+	</script>
+
+	<script>
+		$(function () {
+			getFiles();
+			init_rating();
+			clear_files();
+		});
+
+		function clear_files() {
+			$("body").on("click", ".clear-all-files-data", function (e) {
+				if (e) e.preventDefault();
+				var dataClear = $(this).attr("data-clear");
+				$("." + dataClear).html("").hide();
+				$("#what-uploading").val("");
+				$(".uploader-value-them-all").val("");
+				$(".uploader-files-preview").html("");
+				$(".preview-centered").show();
+			});
+		}
+
+		function init_rating() {
+			$("body").on('click', '.rating-init', function () {
+				var id = $(this).attr("data-id");
+				$("#rating-manager-order-id").val(id);
+			});
+			$("body").on('click', "#rate-user-btn", function () {
+				var orderId = $("#rating-manager-order-id").val();
+				var ratingStars = $("[name='rating-stars']").val();
+				var message = $("[name='rating-message']").val();
+				$("#loading").dialog("show").find("h3").html("Please Wait...");
+				$.ajax({
+					url: "actions.php",
+					type: "post",
+					data: {
+						action: "rate_writer",
+						orderId: orderId,
+						stars: ratingStars,
+						message: message
+					},
+					async: true,
+					cache: false,
+					success: function (data) {
+						//$("#loading").dialog('hide');
+						//alert(data);
+						location.reload();
+					},
+					error: function () {
+						$("#loading").dialog('hide');
+						alert(
+							"Network error, please confirm if you're connected to the internet and try again later");
+					}
+				})
+			});
+		}
+
+		function getFiles() {
+			$("body").on("click", ".view-all-system-files", function (event) {
+				if (event) event.preventDefault();
+
+				var fileType = $(this).attr('file-type');
+				var orderId = $(this).attr('data-id')
+				//alert(fileType+" "+orderId)
+				$("#loading").dialog("show").find("h3").html("Please Wait...");
+				$.ajax({
+					url: "actions.php",
+					type: "post",
+					data: "action=viewSystemFiles&type=" + fileType + "&orderId=" + orderId,
+					async: true,
+					cache: false,
+					success: function (data) {
+						$("#loading").dialog("hide");
+						$("#file-downloader-dialog-data").dialog("open").find(".download-file-didalog")
+							.html(data);
+					},
+					error: function () {
+						$("#loading").dialog("hide");
+						$("#error").dialog("open").find("h3").html(
+							"Please confirm if your network is owkring properly");
+					}
+				});
+			});
+		}
+	</script>
+	<script type="text/javascript">
+		$(function () {
+			//alert(10)
+			//loadingThis("dafd")
+			createTest();
+			//error("sasa")
+		});
+
+		function createTest() {
+			$("#create-a-test").click(function () {
+				var type = $("[name='test-type']").val();
+				var name = $("[name='test-name']").val();
+				var passMark = $("[name='test-pass-mark']").val();
+				var compulsory = $("[name='test-compulsory']").val();
+				var duration = $("[name='test-duration']").val();
+				if (isEmpty(type) || isEmpty(name) || isEmpty(passMark) || isEmpty(compulsory) || isEmpty(duration)) {
+					//$("#error").dialog("open").find("h3").html("Error please make sure you fill in all the fields");
+					errorThis("Error please make sure you fill in all the fields");
+					return;
+				}
+				loadingThis("Please Wait...");
+				$.ajax({
+					url: "actions.php",
+					data: "action=addNewTest&type=" + type + "&name=" + name + "&passMark=" + passMark +
+						"&compulsory=" + compulsory + "&duration=" + duration,
+					type: "post",
+					async: true,
+					cache: false,
+					success: function (data) {
+						//alert(data);
+						loadingThis("", false);
+						$("[name='test-type']").val("");
+						$("[name='test-name']").val("");
+						$("[name='test-pass-mark']").val("");
+						$("[name='test-compulsory']").val("");
+						$("[name='test-duration']").val("");
+						if (data == 2 || data == "2") {
+							errorThis(
+								"You cannot create more than one essay question, but you cah have multiple multi-choice questions"
+								);
+							return;
+						}
+						loadTests();
+					},
+					error: function () {
+						loadingThis("", false);
+						error("Error, please check your internet connections and try again later");
+					}
+				});
+			});
+		}
+
+		function loadTests() {
+			loadingThis("loading Tests");
+			$.ajax({
+				url: "actions.php",
+				data: "action=loadAllTests",
+				type: "post",
+				async: true,
+				cache: false,
+				success: function (data) {
+					//alert(data)
+					loadingThis("", false);
+					$(".tests-display").html(data);
+					$("#create-new-test").dialog("close");
+				},
+				error: function () {
+					loadingThis("", false);
+					$("#error").dialog("open").find("h3").html(
+						"Error, please check your internet connections and try again later");
+				}
+			});
+		}
+
+		function isEmpty(str) {
+			if (str.replace(/\s/g, "") == "") {
+				return true;
+			}
+			return false;
+		}
+
+		function loadingThis(message, itShouldShow = true) {
+			if (itShouldShow) {
+				$("#loading").dialog("show").find("h3").html(message);
+			} else {
+				$("#loading").dialog("hide");
+			}
+		}
+
+		function errorThis(message) {
+			//alert(message)
+			$("#error").dialog("open").find("h3").html(message);
+		}
+	</script>
+	<!-- CSS -->
+	<style type="text/css">
+		.quiz-correct-answer {
+			font-weight: bold;
+		}
+
+		.quiz-correct-answer small {
+			color: green;
+			display: inline-block;
+			margin-left: 7px;
+		}
+
+		.writer-more-detail-row {
+			padding: 5px;
+			border: 1px solid #E1E1E1;
+			margin: 3px;
+			border-radius: 2px;
+		}
+
+		.writer-more-detail-title {
+			font-weight: 700;
+		}
+
+		.user-rating-number {
+			background: #0291DD;
+			display: inline-block;
+			padding: 0px 4px;
+			color: #fff;
+			-webkit-box-align: center;
+			align-items: center;
+			-webkit-box-pack: center;
+			border-radius: 3px;
+			justify-content: center;
+			margin-right: 5px;
+		}
+
+		.user-rating-number-0 {
+			background: #BEC0C2;
+			display: inline-block;
+			padding: 0px 4px;
+			color: #fff;
+			-webkit-box-align: center;
+			align-items: center;
+			-webkit-box-pack: center;
+			border-radius: 3px;
+			justify-content: center;
+			margin-right: 5px;
+		}
+
+		.user-rating-star {
+			display: inline-block;
+			margin: 0 3px 0 0;
+		}
+
+		span.half-rating {
+			font-size: 78px;
+			position: relative;
+			color: rgba(50, 50, 200, 0.5);
+		}
+
+		span.half-rating:before {
+			content: attr(data-char);
+			position: absolute;
+			width: 50%;
+			overflow: hidden;
+			color: rgb(50, 50, 200);
+		}
+
+		.load-essay-data {
+			font-size: 15px;
+			padding: 18px;
+			position: relative;
+			border: 1px solid #E1E1E1;
+			background: white;
+			-webkit-background-size: 100% 30px;
+			-moz-background-size: 100% 30px;
+			-ms-background-size: 100% 30px;
+			background-size: 100% 30px;
+			-webkit-box-shadow: 0 0 3px #0291DD;
+			box-shadow: 0 0 3px #0291DD;
+			border-radius: 5px;
+		}
+
+		.paper::before {
+			content: "";
+			z-index: -1;
+			margin: 0 1px;
+			width: 706px;
+			height: 10px;
+			position: absolute;
+			bottom: -3px;
+			left: 0;
+			background: white;
+			border: 1px solid #B5B5B5;
+		}
+
+		.paper::after {
+			content: '';
+			position: absolute;
+			width: 0px;
+			top: 0;
+			left: 39px;
+			bottom: 0;
+			border-left: 1px solid #F8D3D3;
+		}
+
+		.notif-must {
+			background: white;
+			padding: 10px;
+			border-radius: 3px;
+			margin-bottom: 20px;
+			padding: 20px;
+			border-left: 5px solid #D55049;
+			font-size: 15px;
+		}
+
+		.notif-must .col-md-1 span {
+			font-size: 50px;
+			font-weight: 700;
+		}
+
+		.fine-amount {
+			color: red;
+			font-weight: 700;
+		}
+
+		@keyframes up-right {
+			0% {
+				transform: scale(1);
+				opacity: .25
+			}
+
+			50% {
+				transform: scale (1, 5);
+				opacity: 1;
+			}
+
+			100% {
+				transform: scale(1);
+				opacity: .25;
+			}
+		}
+
+		.circle {
+			border-radius: 50%;
+			width: 20px;
+			height: 20px;
+			opacity: .25;
+			display: inline-block;
+		}
+
+		.red {
+			background-color: red;
+			#position: absolute;
+			top: 50%;
+			left: 50%;
+			-webkit-animation: up-right 1s infinite;
+			-moz-animation: up-right 1s infinite;
+			-o-animation: up-right 1s infinite;
+			animation: up-right 1s infinite;
+		}
+
+		/* WRITERS MESSAGES */
+
+		.chats {
+			padding: 20px;
+		}
+
+		.writer-threads-holder {
+			height: 400px;
+			overflow-y: hidden;
+		}
+
+		.writer-threads-holder:hover {
+			overflow-y: scroll;
+		}
+
+		.thread-list,
+		.thread-list-notifications {
+			padding: 10px;
+			background: #F0F0F0;
+			cursor: pointer;
+			margin-bottom: 2px;
+			border-left: 5px solid transparent;
+		}
+
+		.thread-list.active,
+		.thread-list:hover,
+		.thread-list-notifications:hover {
+			border-left: 5px solid #27C3F3;
+			background: #2F4455;
+			color: #FFF;
+		}
+
+		.thread-list .thread-name {
+			font-weight: 700;
+		}
+
+		.thread-list a {
+			color: #F2711D !important;
+		}
+
+		.writers-chat-room {
+			border-left: 1px solid #CCC;
+			border-top: 1px solid #CCC;
+		}
+
+		.writers-chat-room-messages {
+			height: 350px;
+			padding: 10px;
+			overflow-y: scroll;
+		}
+
+		.new-messages-count {
+			background: #D40000;
+			padding: 5px;
+			color: #fff;
+			font-weight: 700;
+			border-radius: 4px;
+			display: none;
+		}
+
+		#success {
+			z-index: 999999999999999;
+		}
+
+		/* ENDING WRITERS MESSAGES */
+
+
+
+		.coupon-code-holder {
+			-webkit-box-shadow: 0 0 5px gray;
+			box-shadow: 0 0 5px gray;
+			padding: 10px;
+			border-radius: 3px;
+			margin-bottom: 10px;
+		}
+
+		.coupon-code-toggle {
+			text-align: center;
+			font-weight: 700;
+			padding: 10px 0;
+			cursor: pointer;
+		}
+
+		.coupon-code-response {
+			padding-top: 5px;
+		}
+
+		.coupon-code-input {
+			display: none;
+		}
+
+		.coupon-code-response {
+			display: none;
+		}
+
+		.best-writers {
+			padding: 30px 0;
+			background: rgb(211,63,251);
+background: radial-gradient(circle, rgba(211,63,251,1) 0%, rgba(70,89,252,1) 100%);
+			color: #0291DD !important;
+		}
+
+
+
+		.best-writers h2 {
+			text-align: center;
+			color: #fff;
+			font-size: 25px;
+			margin-bottom: 30px;
+		}
+
+		.card-display {
+			background-color: #fff;
+			box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.15);
+			border-radius: 7px;
+			padding: 15px 20px;
+			min-height: 200px;
+			margin: 0 40px 40px 0;
+			color: #0291DD !important;
+		}
+
+		.card-display .profile-meta-data {
+			border-bottom: 1px solid #CCC;
+			padding-bottom: 10px;
+		}
+
+		.card-display .profile-meta-data img {
+			max-height: 80px;
+			border-radius: 50%;
+			margin-right: 20px;
+			border: 2px solid rgb(2, 0, 36);
+		}
+
+		.orders-done-meta-data {
+			padding: 10px 0 10px 0;
+
+		}
+
+		.orders-done-meta-data span {
+			display: block;
+			padding-bottom: 10px;
+		}
+
+		.hire-meta-data {
+			padding: 10px 0;
+		}
+
+		.hire-special-btn {
+			display: inline-block;
+			background-color: #0291DD;
+			border: 1px solid #0291DD;
+			color: #fff;
+			-webkit-transition: .4s;
+			transition: .4s;
+			border-radius: 5px;
+			padding: 10px 22px;
+			vertical-align: middle;
+			font-weight: 700;
+			text-align: center;
+			line-height: 18px;
+			letter-spacing: 0;
+			text-transform: none;
+			outline: none;
+			cursor: pointer;
+			font-size: 14px;
+			font-family: "Roboto", sans-serif;
+			text-decoration: none !important;
+			-webkit-appearance: none;
+			-moz-appearance: none;
+			appearance: none;
+		}
+
+		.hire-special-btn:hover {
+			background: #fff;
+			color: #000;
+			border: 1px solid #0291DD;
+		}
+
+		.collopsible-meta-data {
+			display: none;
+		}
+
+		.quiz-correct-answer {
+			font-weight: bold;
+		}
+
+		.quiz-correct-answer small {
+			color: green;
+			display: inline-block;
+			margin-left: 7px;
+		}
+
+		.writer-more-detail-row {
+			padding: 5px;
+			border: 1px solid #E1E1E1;
+			margin: 3px;
+			border-radius: 2px;
+		}
+
+		.writer-more-detail-title {
+			font-weight: 700;
+		}
+
+		.user-rating-number {
+			background: #0291DD;
+			display: inline-block;
+			padding: 0px 4px;
+			color: #fff;
+			-webkit-box-align: center;
+			align-items: center;
+			-webkit-box-pack: center;
+			border-radius: 3px;
+			justify-content: center;
+			margin-right: 5px;
+		}
+
+		.user-rating-number-0 {
+			background: #BEC0C2;
+			display: inline-block;
+			padding: 0px 4px;
+			color: #fff;
+			-webkit-box-align: center;
+			align-items: center;
+			-webkit-box-pack: center;
+			border-radius: 3px;
+			justify-content: center;
+			margin-right: 5px;
+		}
+
+		.user-rating-star {
+			display: inline-block;
+			margin: 0 3px 0 0;
+		}
+
+		span.half-rating {
+			font-size: 78px;
+			position: relative;
+			color: rgba(50, 50, 200, 0.5);
+		}
+
+		span.half-rating:before {
+			content: attr(data-char);
+			position: absolute;
+			width: 50%;
+			overflow: hidden;
+			color: rgb(50, 50, 200);
+		}
+
+		.load-essay-data {
+			font-size: 15px;
+			padding: 18px;
+			position: relative;
+			border: 1px solid #E1E1E1;
+			background: white;
+			-webkit-background-size: 100% 30px;
+			-moz-background-size: 100% 30px;
+			-ms-background-size: 100% 30px;
+			background-size: 100% 30px;
+			-webkit-box-shadow: 0 0 3px #0291DD;
+			box-shadow: 0 0 3px #0291DD;
+			border-radius: 5px;
+		}
+
+		.paper::before {
+			content: "";
+			z-index: -1;
+			margin: 0 1px;
+			width: 706px;
+			height: 10px;
+			position: absolute;
+			bottom: -3px;
+			left: 0;
+			background: white;
+			border: 1px solid #B5B5B5;
+		}
+
+		.paper::after {
+			content: '';
+			position: absolute;
+			width: 0px;
+			top: 0;
+			left: 39px;
+			bottom: 0;
+			border-left: 1px solid #F8D3D3;
+		}
+
+		.notif-must {
+			background: white;
+			padding: 10px;
+			border-radius: 3px;
+			margin-bottom: 20px;
+			padding: 20px;
+			border-left: 5px solid #D55049;
+			border-top: 1px solid #ccc;
+			border-right: 1px solid #ccc;
+			border-bottom: 1px solid #ccc;
+			font-size: 15px;
+		}
+
+		.notif-must .col-md-1 span {
+			font-size: 50px;
+			font-weight: 700;
+		}
+
+		.fine-amount {
+			color: red;
+			font-weight: 700;
+		}
+
+		@keyframes up-right {
+			0% {
+				transform: scale(1);
+				opacity: .25
+			}
+
+			50% {
+				transform: scale (1, 5);
+				opacity: 1;
+			}
+
+			100% {
+				transform: scale(1);
+				opacity: .25;
+			}
+		}
+
+		.circle {
+			border-radius: 50%;
+			width: 20px;
+			height: 20px;
+			opacity: .25;
+			display: inline-block;
+		}
+
+		.red {
+			background-color: red;
+			-webkit-box-shadow: 0 0 20px #F7B21A;
+			box-shadow: 0 0 20px #F7B21A;
+			#position: absolute;
+			top: 50%;
+			left: 50%;
+			-webkit-animation: up-right 1s infinite;
+			-moz-animation: up-right 1s infinite;
+			-o-animation: up-right 1s infinite;
+			animation: up-right 1s infinite;
+		}
+
+		.space-bottom {
+			display: block;
+			margin-bottom: 7px;
+		}
+
+		@media only screen and (max-width: 970px) {
+			.container {
+				padding-left: 5px !important;
+				padding-right: 5px !important;
+			}
+
+			.container-fluid {
+				padding-left: 0px !important;
+				padding-right: 0px !important;
+			}
+
+			.content-area {
+				padding-top: 200px !important;
+				padding-right: 0 !important;
+				padding-left: 0 !important;
+			}
+
+			.sidebar-area {
+				overflow-y: scroll !important;
+				padding-top: 180px !important;
+			}
+
+			.mobile-sidebar {
+				color: #000;
+			}
+		}
+	</style>
+
+	<script type="text/javascript">
+		$(function () {
+			var dataFilePreview = "";
+			var parent = "";
+
+			justUpload();
+			viewFiles();
+			coupon_code_ui_toggle();
+			coupon_validation();
+			proceed_with_order();
+		});
+
+		function proceed_with_order() {
+			$("#proceed-with-order").click(function () {
+				$(".form-response").hide()
+				var level = $("[name='cal-level']").val();
+				var urgency = $("[name='cal-urgency']").val();
+				var pages = $("[name='calc-page-numbers']").val();
+				if (level == "" || urgency == "0") {
+					$(".form-response").show().html(
+						"<div class='alert alert-danger'><div class='close' data-dismiss='alert'>&times;</div>  All fields are required!</div> "
+						)
+					return;
+				}
+
+				$("#loading").dialog("show");
+				$.ajax({
+					url: "actions.php",
+					type: "post",
+					data: {
+						action: "clear_any_pending_coupon_code",
+
+					},
+					cache: false,
+					success: function (data) {
+						//alert( data );
+						$("#loading").dialog("hide");
+						$("#order-dialog").dialog("open");
+					},
+					error: function () {
+						$("#loading").dialog("hide");
+						alert("network error, please try again later");
+					}
+				});
+
+			});
+		}
+
+		function coupon_code_ui_toggle() {
+			$("body").on("click", ".coupon-code-toggle", function () {
+				$(".coupon-code-input").slideToggle();
+			});
+		}
+
+		function coupon_validation() {
+
+			$("[data-close='#order-dialog']").click(function () {
+				$(".coupon-code-response").show().html("");
+				$("[name='coupon-code-order']").val("");
+			});
+
+			$("[name='coupon-code-order']").on("keyup change", function () {
+				$(".coupon-code-response").show().html("");
+				var code = $(this).val();
+				var price = $("[name='calc-price']").val();
+
+				//alert( code );
+				//return;
+				if (code == "") {
+					$(".coupon-code-response").show().html("");
+					return;
+				}
+				$.ajax({
+					url: "actions.php",
+					type: "post",
+					data: {
+						action: "coupon_calculations",
+						code: code,
+						price: price
+					},
+					cache: false,
+					success(data) {
+						$(".coupon-code-response").show().html(data);
+					},
+					error: function () {
+						$(".coupon-code-response").show().html(
+							"<span class='text-danger'>Network error, please try again later</span>");
+					}
+				})
+			});
+
+		}
+
+		function viewFiles() {
+			$("body").on("click", ".system-view-files", function () {
+				var type = $(this).attr("file-type");
+				var orderId = $(this).attr("data-id");
+				$("#loading").dialog("show").find("h3").html("Please Wait...");
+				$.ajax({
+					url: "actions.php",
+					data: "action=system_view_files&type=" + type + "&orderId=" + orderId,
+					type: "post",
+					async: true,
+					cache: false,
+					success: function (data) {
+						$("#loading").dialog("hide");
+						$("#system-files-viewer").dialog("open").find(".file-viewer-holder").html(data);
+					},
+					error: function () {
+						$("#error").dialog("open").find("h3").html("Error! A network error has occured!");
+					}
+				});
+			});
+		}
+
+		function justUpload() {
+			//alert(1)
+			$("body").on("click", ".file-uploader-init", function (event) {
+				//alert(10)
+				if (event) event.preventDefault();
+				var fileType = $(this).attr("file-type");
+				dataFilePreview = $(this).attr("data-preview");
+				parent = $(this).attr("data-parent");
+				//alert(parent)
+				$("#what-uploading").val(fileType);
+				$("#file-uploader-dialog").dialog("open");
+				event.preventDefault();
+				return false;
+			});
+			$("body").on("click", ".uploader-trigger", function (event) {
+				event.preventDefault();
+				$(".uploade-them-all-triggered").trigger("click");
+			});
+			$(".uploade-them-all-triggered").change(function () {
+				$("#upload-all-files-form").submit();
+			});
+			uploadOrders();
+		}
+
+		function uploadOrders() {
+			uploadAllFiles("orders-upload-preview", "");
+			//uploadAllFiles("submitted-work-preview", "submitted-work-files");
+		}
+
+		function uploadAllFiles(preview, textarea_class) {
+			$("#upload-all-files-form").ajaxForm({
+				beforeSend: function () {
+					$("#loading").dialog("show").find("h3").html("Just a moment...");
+				},
+				uploadProgress: function (event, position, total, percentageComplete) {
+					$("#loading").dialog("show").find("h3").html("Just a moment - " + percentageComplete + "% ");
+				},
+				success: function () {
+					$("#loading").dialog("hide");
+					$(parent + " ." + dataFilePreview).show();
+				},
+				error: function () {
+					itHasError = true;
+					$("#loading").dialog("hide");
+					$("#error").dialog("open").find("h3").html(
+						"Error occurred! Please try again later! May be network error ");
+				},
+				complete: function (data) {
+					var response = data.responseText;
+					var mustAppend = 0;
+					var uploadedFiles = $(".uploader-value-them-all").val();
+					if (response != "") {
+						if (response.indexOf("568425630987TOKENIMGUPLOAD") < 0) {
+							if (uploadedFiles != "") {
+								mustAppend = "568425630987TOKENIMGUPLOAD";
+							} else {
+								mustAppend = "";
+							}
+						} else {
+							mustAppend = "568425630987TOKENIMGUPLOAD";
+						}
+					}
+					if (textarea_class == "") {
+						$(".uploader-value-them-all").val(uploadedFiles + mustAppend + data.responseText);
+					} else {
+						$("." + textarea_class).val(uploadedFiles + mustAppend + data.responseText);
+					}
+					var filesArray = response.split("568425630987TOKENIMGUPLOAD");
+					var requiredResponse = "";
+					var dataCount = " - ";
+					// we need to see if a file already exists in an array of uploaded files
+					var fileCheckerArray = Array();
+					if (uploadedFiles != "") {
+						if (uploadedFiles.indexOf("568425630987TOKENIMGUPLOAD") < 0) {
+							fileCheckerArray = Array(uploadedFiles);
+						} else {
+							fileCheckerArray = uploadedFiles.split("568425630987TOKENIMGUPLOAD");
+						}
+					}
+					for (var i = 0; i < filesArray.length; i++) {
+						if ($.inArray(filesArray[i], fileCheckerArray) >= 0) {
+							//console.log('data is exist!');
+						} else {
+							//console.log('data does not exist!');
+							var theEachFileArray = filesArray[i].split("index.html");
+							requiredResponse += dataCount + " " + theEachFileArray[theEachFileArray.length - 1] +
+								"<br />";
+						}
+
+					}
+					$(".preview-centered").hide();
+					//var directiveForMoreFiles = "";
+					//alert(dataFilePreview)
+					if (parent == "" || parent == null || typeof parent == typeof undefined) {
+						$("." + dataFilePreview).append(requiredResponse);
+					} else {
+						$(parent + " ." + dataFilePreview).append(requiredResponse);
+						//alert('appended on\n'+parent);
+					}
+					$(".uploader-files-preview").append(requiredResponse);
+					$(".the-add-more-files-link").show();
+					//$("."+directiveForMoreFiles).show();
+					//$("."+preview).append(requiredResponse);
+				}
+			});
+		}
+	</script>
+	<!-- WRITER CHAT -->
+
+	<script>
+		$(function () {
+			view_wrt();
+			viewMoreWriters();
+			collapsible_meta_data();
+			init_profile_upload();
+			uploader_docs();
+			viewUserReviews();
+		});
+
+		function viewUserReviews() {
+			$("body").on("click", ".view-user-ratings", function (event) {
+				event.preventDefault();
+				loadingThis("Please Wait...", true);
+				var user = $(this).attr("data-user");
+				$.ajax({
+					url: "actions.php",
+					data: "action=viewReviews&user=" + user,
+					type: "post",
+					async: true,
+					cache: false,
+					success: function (data) {
+						loadingThis("", false);
+						$("#user-dialog-reviews").dialog("open").find(".user-reviews-display").html(data);
+					},
+					error: function () {
+						loadingThis("", false);
+						errorThis("Network error, please try again later");
+					}
+				})
+			});
+		}
+
+		function view_wrt() {
+			$("body").on("click", ".non-admin-view-writer", function (e) {
+				if (e) e.preventDefault();
+
+				var writer = $(this).attr("data-writer");
+				ld("Please Wait");
+				$.ajax({
+					url: "actions.php",
+					type: "post",
+					data: {
+						action: "non_admin_view_writer",
+						writer: writer
+					},
+					success: function (data) {
+						ld("", false);
+						$("#non-admin-view-writers").dialog("open");
+						$(".non-admin-view-writers-display").html(data);
+					},
+					error: function () {
+						ld("", false);
+						alert(
+							"Could not complete your request due to internet connecdtion problems, please try again later");
+					}
+				});
+			});
+		}
+
+		function viewMoreWriters() {
+			$("body").on('click', '.view-more-writers-details', function (e) {
+				if (e) e.preventDefault();
+				var token = $(this).attr("data-token");
+				loadingThis("Please Wait...");
+				$.ajax({
+					url: "actions.php",
+					type: "post",
+					data: "action=viewMoreWritersDetails&token=" + token,
+					async: true,
+					cache: false,
+					success: function (data) {
+						loadingThis("", false);
+						$(".view-writer-more-data").html(data);
+						$("#dialog-view-more-writers").dialog("open");
+					},
+					error: function () {
+						loadingThis("", false);
+						error("Network Error occured, please try again later");
+					}
+				});
+			});
+		}
+
+		function collapsible_meta_data() {
+			//collopsible-meta-data
+			$("body").on("click", ".view-more-hiring-meta-data", function (event) {
+				if (event) event.preventDefault();
+
+				//$(this).html( "View Less &#8592;" );
+				if ($(this).parents('.card-display').find(".collopsible-meta-data").is(":visible")) {
+					$(this).html("View More →");
+				} else {
+					$(this).html("View Less &#8592;");
+				}
+				$(this).parents('.card-display').find(".collopsible-meta-data").slideToggle();
+
+			});
+		}
+
+		function init_profile_upload() {
+			$("body").on("click", ".profile-upload-init", function (event) {
+				if (event) event.preventDefault();
+
+				var attribute_ = $(this).attr('data-writer');
+
+				// `attribute_` is false.  Check for both.
+				if (typeof attribute_ !== typeof undefined && attribute_ !== false) {
+					// the atrribute does note exist
+					return;
+				}
+
+				// this happens when uploading profile image or when changing it
+
+				var writer = $("#uploading-profile-writer").val();
+
+				$.ajax({
+					url: "actions.php",
+					type: "post",
+					data: {
+						action: "current-writer-profile-image",
+						writer: writer
+					},
+					cache: false,
+					success: function (data) {
+						//alert( data )
+					},
+					error: function () {
+						alert("Upload was not possible because of problems in network connections");
+						location.reload();
+					}
+				})
+
+
+			});
+		}
+
+
+		function uploader_docs() {
+			//alert(10);
+			//return;
+			upload_them_all("doc-form-up-loader", "order-doc-response", "o-doc", "triger-upload-of-order-doc",
+				"triggered-order-doc-up-loader");
+			upload_them_all("doc-form-submit-order", "submit-work-doc-response", "input-order-submit",
+				"trigger-work-submission", "triggered-submit-order");
+			upload_them_all("form-upload-profile", "profile-upload-responses", "input-profile-upload",
+				"trigger-profile-upload", "triggered-profile-upload");
+			upload_them_all("sample-form-up-loader", "sample-file-response", "s-doc", "triger-upload-of-sample-doc",
+				"triggered-sample-doc-up-loader");
+			upload_them_all("sitemap-form-up-loader", "", "", "upload-the-sitemap", "triggered-sitemap-doc-up-loader");
+
+
+			upload_them_all("new-profile-upload-form", "", "", "profile-upload-init", "triggered-new-profile-upload-pic");
+		}
+
+
+		function upload_them_all(fromId, callBakInput, input, triggering, triggered) {
+			//alert( 'upload them all' )
+			$("#" + triggering).click(function () {
+				$("#" + triggered).trigger("click");
+				//alert(10)
+			});
+			$("#" + triggered).change(function () {
+				$("#" + fromId).submit();
+			});
+			var itHasError = false;
+			$("#" + fromId).ajaxForm({
+				beforeSend: function () {
+					$("#loading").dialog("show").find("h3").html("Just a moment...");
+				},
+				uploadProgress: function (event, position, total, percentageComplete) {
+					$("#loading").dialog("show").find("h3").html("Just a moment - " + percentageComplete + "% ");
+				},
+				success: function () {
+					$("#loading").dialog("hide");
+				},
+				error: function () {
+					itHasError = true;
+					$("#loading").dialog("hide");
+					$("#error").dialog("open").find("h3").html(
+						"Error occurred! Please try again later! May be network error ");
+				},
+				complete: function (data) {
+					if (itHasError) {
+						itHasError = false;
+						return;
+					}
+
+					$("#loading").dialog("hide");
+					var response = data.responseText;
+					//alert(response)
+					if (response == 2 || response == "2") {
+						$("#error").dialog("open").find("h3").html(
+							"You uploaded a larger file. Please compress your file");
+						return;
+					}
+					if (response == 4 || response == "4") {
+						$("#error").dialog("open").find("h3").html(
+							"That file is not allowed in the system! If you would like us to add it contact Admin ASAP so that we can white-list it. In the mean time, you can just zip your file(s) - zip files are acceptable"
+							);
+						return;
+					}
+					if (response == 16 || response == "16") {
+						$("#error").dialog("open").find("h3").html(
+							"That file has been rejected, please rename your file to <strong>sitemap.xml</strong>"
+							);
+						return;
+					}
+					if (response == "sitemap.xml") {
+						window.location.href = "loginbef8.html?message=sitemap%20has%20been%20updated!";
+						return;
+					}
+
+					//alert( response )
+
+
+					if (callBakInput != "")
+						$("." + callBakInput).show().html("Docoument <span class='ri ri-arrow-right'></span>[" +
+							response + "]");
+
+					if (input != "")
+						$("#" + input).val(response);
+					//alert(response);
+					if (response.indexOf("_____") >= 0) {
+						console.log("nice")
+						var responseArray = response.split("_____");
+						if (responseArray[1] == "345") {
+							success("Profile image has been uploaded", true);
+							$(".profile-image-update").attr("src", responseArray[0]);
+							return;
+						}
+					}
+
+					if (response.indexOf("KLSOILJ8983__BLOBS") >= 0) {
+
+						// the profile image ready for croping
+						var profile_to_upload_args = response.split("KLSOILJ8983__BLOBS");
+						var new_profile_image = profile_to_upload_args[0];
+
+						$("#image-cropper").attr("src", new_profile_image);
+						$("#profile-cropper").dialog("open");
+						process_cropper_();
+					}
+
+				}
+			});
+		}
+
+		function cropper_() {
+			const image = document.getElementById('image-cropper');
+
+			const cropper = new Cropper(image, {
+				aspectRatio: 1 / 1,
+				preview: '.img-preview',
+				crop(event) {
+					/*
+					console.log(event.detail.x);
+					console.log(event.detail.y);
+					console.log(event.detail.width);
+					console.log(event.detail.height);
+					console.log(event.detail.rotate);
+					console.log(event.detail.scaleX);
+					console.log(event.detail.scaleY);
+					*/
+				}
+			});
+
+			// uploading cropped image
+			$("body").on("click", "#upload-cropped-image", function () {
+				cropper.getCroppedCanvas().toBlob((blob) => {
+					const formData = new FormData();
+					// Pass the image file name as the third parameter if necessary.
+					formData.append('croppedImage', blob /*, 'example.png' */ );
+					// Use `jQuery.ajax` method for example
+					$("#loading").dialog("show").find("h3").html("Please Wait...");
+					$.ajax('upload-profiles.html', {
+						method: 'POST',
+						data: formData,
+						processData: false,
+						contentType: false,
+						success(data) {
+							$("#loading").dialog("hide")
+							reset_cropper();
+						},
+						error() {
+							$("#loading").dialog("hide")
+							console.log('Upload error');
+						}
+					});
+				});
+			});
+
+			$("body").on("click", "[data-close='#profile-cropper']", function () {
+				cropper.destroy();
+				cropper.clear();
+				reset_cropper();
+			});
+		}
+
+		function reset_cropper() {
+			$("#loading").dialog("show").find("h3").html("Resetting Cropper...");
+			location.reload();
+		}
+
+		function process_cropper_() {
+			var time = 0;
+			$("#loading").dialog("show").find("h3").html("Please Wait...");
+
+			function real_time_() {
+				var id = setTimeout(real_time_, 1000);
+				if (time == 2) {
+					clearTimeout(id);
+					$("#loading").dialog("hide");
+					cropper_();
+				}
+
+				time++;
+			}
+
+			real_time_();
+		}
+	</script>
+	<script>
+		$(function () {
+			take_care_of_mobile_side_bar();
+			mixed_animations();
+		});
+
+		function take_care_of_mobile_side_bar() {
+			$("body").on("click", ".open-sidebar", function () {
+				$("body").addClass('open-customs-side-bar');
+			});
+			$("body").on("click", ".close-sidebar", function () {
+				$("body").removeClass('open-customs-side-bar');
+			});
+		}
+
+		function mixed_animations() {
+			var n = 0;
+
+			function m_animate() {
+				setTimeout(m_animate, 1000);
+				if (n % 3 == 0 && n % 6 != 0) {}
+				if (n % 3 != 0 && n % 6 == 0) {
+
+
+				}
+				if (n % 3 != 0 && n % 6 != 0 && n % 9 == 0) {
+
+				}
+
+				n++;
+			}
+			m_animate();
+		}
+	</script>
+	<style type="text/css">
+		.open-customs-side-bar {
+			overflow: hidden !important;
+		}
+	</style>
+
+	<meta name="description"
+		content="Get quality writing service  and assignments help from Writing Errands at home_page-data">
+	<meta name="keywords"
+		content="Writing, Assignment Help, Academic Writing, Essay Writing, Business Writing, Research Writing, Dissertations, Thesis, synopsis, biography">
+	<meta name="author" content="Benson Karue Mwangi, SEO expert at HACK SMILE hacksmile.com">
+	<link rel="stylesheet" href="css/index1e78.css?v=1621934456">
+	<script src="../cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"
+		integrity="sha512-bPs7Ae6pVvhOSiIcyUClR7/q2OAsRiovw4vAkX+zJbw3ShAeeqezq50RIIcIURq7Oa20rW2n2q+fyXBNcU9lrw=="
+		crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="../cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css"
+		integrity="sha512-tS3S5qG0BlhnQROyJXvNjeEM4UpMXHrQfTGmbQ1gKmelCxlSEBUaxhRBj/EFTzpbP4RVSrpEikbmdJobCvhE3g=="
+		crossorigin="anonymous" />
+	<link rel="stylesheet" href="../cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.css"
+		integrity="sha512-OTcub78R3msOCtY3Tc6FzeDJ8N9qvQn1Ph49ou13xgA9VsH9+LRxoFU6EqLhW4+PKRfU+/HReXmSZXHEkpYoOA=="
+		crossorigin="anonymous" />
+	<link rel="stylesheet" href="css/ratings.css">
+	<link rel="stylesheet" href="css/footer.css">
+	<link rel="stylesheet" href="css/order1e78.css?v=1621934456">
+</head>
+
+<body>
+
+	<!-- begin olark code -->
+	<script type="text/javascript" async>
+		;
+		(function (o, l, a, r, k, y) {
+			if (o.olark) return;
+			r = "script";
+			y = l.createElement(r);
+			r = l.getElementsByTagName(r)[0];
+			y.async = 1;
+			y.src = "//" + a;
+			r.parentNode.insertBefore(y, r);
+			y = o.olark = function () {
+				k.s.push(arguments);
+				k.t.push(+new Date)
+			};
+			y.extend = function (i, j) {
+				y("extend", i, j)
+			};
+			y.identify = function (i) {
+				y("identify", k.i = i)
+			};
+			y.configure = function (i, j) {
+				y("configure", i, j);
+				k.c[i] = j
+			};
+			k = y._ = {
+				s: [],
+				t: [+new Date],
+				c: {},
+				l: a
+			};
+		})(window, document, "static.olark.com/jsclient/loader.html");
+		/* custom configuration goes here (www.olark.com/documentation) */
+		olark.identify('1706-669-10-6552');
+	</script>
+	<!-- end olark code -->
+	</script>
+	<!--End of Tawk.to Script-->
+	<div class='container-fluid header-top-title'>
+		<div class='container'>
+			<div class="row">
+				<div class="col-md-3">
+					<div class="header-phone"><span class="ri ri-envelope"></span> <a
+							href='#'>support@home_page-data</a></div>
+				</div>
+				<div class="col-md-6">
+					<h1><a href='index.html'><img src='' alt='Writing Errands' style='max-height: 50px;' /></a></h1>
+				</div>
+				<div class="col-md-3"></div>
+			</div>
+		</div>
+	</div>
+	<nav class="navbar navbar-default real-nav">
+
+		<div class="container">
+			<!-- Brand and toggle get grouped for better mobile display -->
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+					data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+			</div>
+			<!-- Collect the nav links, forms, and other content for toggling -->
+			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				<ul class="nav navbar-nav">
+					<li><a href="index.html">Home</a></li>
+					<li><a href="samples.html">Samples</a></li>
+					<li><a href="books.html">Buy/Rent Books</a></li>
+					<li><a href="terms-of-service.html">Terms of Service</a></li>
+					<li><a href="blog/index.html">Blog</a></li>
+					<li><a href="contact-us.html">Contact Us</a></li>
+
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					<!-- <li><a href="./writers/" class='btn- btn-border btn-clear dark-theme' style="padding: 10px 25px; margin-right: 7px; background: #B50000;"><span class="ri ri-pencil"></span> Become a Writer</a></li> -->
+					<li><a href="order.html" class='btn- btn-border btn-clear dark-theme'
+							style="padding: 10px 25px;"><span class="ri ri-pencil-square"></span> Post Your Order</a>
+					</li>
+					<li><a href="login.html"><span class='ri ri-user'></span> Login</a></li>
+					<li><a href="register.html"><span class="ri ri-check-square"></span> Sign Up</a></li>
+				</ul>
+			</div><!-- /.navbar-collapse -->
+		</div><!-- /.container-fluid -->
+	</nav>
+	</div>
+	<script type="text/javascript">
+		var dots = 0;
+
+		$(document).ready(function () {
+			typingDots();
+		});
+
+		function typingDots() {
+			setTimeout(typingDots, 300);
+			if (dots < 3) {
+				$(".typing-dots").append(".");
+			} else {
+				$(".typing-dots").html("");
+				dots = -1;
+			}
+			dots++;
+		}
+
+		function clickTypingDots() {}
+	</script>
+	<div class="container-fluid front-nicer" style="background: rgb(41 63 123 / 60%);    margin-top: 43px;"></div>
+	<div class='container-fluid writing-estate-front-hero'>
+		<div class='container'>
+			<div class="row">
+				<div class="col-md-8">
+					<div class="intro-title">
+						<span class="intro-text">High-Quality Essay Writing Service
+							Hire a Writer for Help</span>
+						<p>
+							Our leading writing service provides custom written papers in 80+ disciplines. Order either
+							short essays or extensive dissertations & our expert ENL writers will easily prepare a paper
+							according to your requirements
+						</p><br /><br />
+						<center><a href="#" class='btn- btn-border btn-clear dark-theme'
+								style="padding: 10px 25px;"><span class="ri ri-pencil-square"></span> Place an Order</a>
+						</center>
+					</div>
+					<div class="orm-mob-hide">
+						<div class="trust-widget">
+							<div class="ep-bg">
+								<div class="trust-icon"><img
+										src="https://assets.website-files.com/5e5d4354e4bb2065e7524459/5ebbeff77b98cd17b6e433a8_Frame 220.svg"
+										width="191" height="180" loading="lazy" alt="" class="image-50"></div>
+								<div class="trust-content">
+									<p class="trust-heading">TrustPilot</p>
+									<div class="trust-rating">
+										<p class="trust-heading numbers">4.8</p><img
+											src="https://assets.website-files.com/5e5d4354e4bb2065e7524459/5f968425b68ed73919b60127_rating-star.svg"
+											width="95" height="16" loading="lazy" alt="" class="image-36">
+									</div>
+								</div>
+							</div>
+							<div class="ep-bg">
+								<div class="trust-icon"><img
+										src="https://assets.website-files.com/5e5d4354e4bb2065e7524459/5ebbeff77b98cdc991e433aa_Frame 221.svg"
+										width="191" height="180" loading="lazy" alt="" class="image-50"></div>
+								<div class="trust-content">
+									<p class="trust-heading">Sitejabber</p>
+									<div class="trust-rating">
+										<p class="trust-heading numbers">4.7</p><img
+											src="https://assets.website-files.com/5e5d4354e4bb2065e7524459/5f968425b68ed73919b60127_rating-star.svg"
+											width="95" height="16" loading="lazy" alt="" class="image-36">
+									</div>
+								</div>
+							</div>
+							<div href="#" class="ep-bg">
+								
+								<!-- <div class="trust-content">
+									<p class="trust-heading">WritingErrands</p>
+									<div class="trust-rating">
+										<p class="trust-heading numbers">4.9</p><img
+											src="https://assets.website-files.com/5e5d4354e4bb2065e7524459/5f968425b68ed73919b60127_rating-star.svg"
+											width="95" height="16" loading="lazy" alt="" class="image-36">
+									</div>
+								</div> -->
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="top-cost-calc">
+
+						<script type="text/javascript">
+							$(function () {
+								$("#other-services-btn").click(function () {
+									var topic = $("[name='other-topic']").val();
+									var description = $("[name='other-description']").val();
+									var budget = $("[name='other-budget']").val();
+									var urgency = $("[name='other-cal-urgency']").val();
+									var files = $(".uploader-value-them-all").val();
+									var fileType = $("#what-uploading").val();
+									if (isEmpty(topic) || isEmpty(budget) || isEmpty(urgency)) {
+										$("#error").dialog("open").find("h3").html(
+											"Error, please fill in all the required fields");
+										return;
+									}
+									$("#loading").dialog("show").find("h3").html("Please Wait");
+									$.ajax({
+										url: "actions.php",
+										data: "action=addToCart&topic=" + topic + "&description=" + description +
+											"&price=" + budget + "&urgency=" + urgency + "&files=" + files +
+											"&fileType=" + fileType,
+										type: "post",
+										async: true,
+										cache: false,
+										success: function (data) {
+											//alert(data);
+											$("#loading").dialog("hide");
+											//if(data == "1" || data == 1){
+											if ($.trim(data)) {
+												window.location =
+													"login51ca.html?action=determineDirectionAferAddingToCart";
+											}
+										},
+										error: function () {
+											$("#loading").dialog("hide");
+											$("#error").dialog("open").find("h3").html(
+												"An error occurred, please check your internet connection");
+										}
+									});
+								});
+
+								function isEmpty(str) {
+									if (str.replace(/\s+/, "") == "") {
+										return true;
+									}
+									return false;
+								}
+							});
+						</script>
+						<div class="dynamic-order">
+							<div class="dynamic-order-start">
+								<center>
+									<h3 class="dymanic-order-start">What Are You Looking For? <br /><small
+											style="color: #fff">We're here to assist you. Please select a
+											service</small></h3>
+								</center>
+								<center><img src='images/banner-bg.png' class='img-fluid img-responsive'
+										alt='Writing Errands - ordering services' style='max-height: 150px;' /></center>
+								<span class="d-writing-service">
+									<w class="ri ri-pencil pull-left" style='display: inline-block; margin-top: 3px;'>
+									</w> Writing Services
+								</span>
+								<span class="d-other-services">
+									<w class="ri ri-computer pull-left" style='display: inline-block; margin-top: 3px;'>
+									</w> Other Services - <small>Maths, Coding, e.t.c</small>
+								</span>
+							</div>
+							<div class="dynamic-order-1">
+								<div class='writing-estate-calculator' style="">
+									<span class="back-to-services-options-btn"> <span class="ri ri-arrow-left"></span>
+										Back to Services</span>
+									<center><span
+											style="display: inline-block; font-size: 17px; text-transform: uppercase; font-weight: 700; margin-bottom: 15px;">Writing
+											Service</span></center>
+									<div>
+										<h4 style="display: inline-block; margin-right: 30px; color: #fff;">Calculate
+											Your Order</h4>
+										<h4 style="display: inline-block; color: #fff;">Price: <span
+												style="color: #FFAA00;" class='calc-total'>0 USD</span> <a href='#'
+												style="font-size: 13px; display: none;" class="explain-price-opner"
+												data-zoom-in="dialog" q-target="#price-explainer-dialog">Explain
+												This</a></h4>
+									</div>
+									<BR />
+									<div class='form-response'></div>
+									<form class='form-horizontal' method='post' onsubmit='return false'>
+										<div class='form-group'>
+											<label class='col-md-3'>Level</label>
+											<div class='col-md-9'>
+												<select class='form-control' name='cal-level' value=''>
+													<option value=''>-Select Level-</option>
+													<option value='High School'>High School</option>
+													<option value='College'>College</option>
+													<option value='Undergraduate'>Undergraduate</option>
+													<option value='Masters'>Masters</option>
+													<option value='PHD'>PHD</option>
+												</select>
+											</div>
+										</div>
+
+										<div class='form-group'>
+											<label class="col-md-3">Urgency</label>
+											<div class='col-md-9'>
+												<select class='form-control' name='cal-urgency'>
+													<option value="0">-Select-</option>
+													<option value="6">6 hours</option>
+													<option value="12">12 hours</option>
+													<option value="24">24 hours</option>
+													<option value="36">36 hours</option>
+													<option value="48">48 hours</option>
+													<option value="72">3 days</option>
+													<option value="120">5 days</option>
+													<option value="168">7 days</option>
+													<option value="216">9 days</option>
+													<option value="240">10 days</option>
+													<option value="264">14 days</option>
+													<option value="504">21 days</option>
+													<option value="720">30 days</option>
+													<option value="1440">2 Months</option>
+												</select>
+											</div>
+										</div>
+										<div class='form-group'>
+											<Label class='col-md-3'>Pages</Label>
+											<div class='col-md-9'>
+												<select id='calc-page-numbers' name='calc-page-numbers'
+													class='form-control custom-select'>
+													<option value="1" selected="">275 words / 1 page</option>
+													<option value="2">550 words / 2 pages</option>
+													<option value="3">825 words / 3 pages</option>
+													<option value="4">1100 words / 4 pages</option>
+													<option value="5">1375 words / 5 pages</option>
+													<option value="6">1650 words / 6 pages</option>
+													<option value="7">1925 words / 7 pages</option>
+													<option value="8">2200 words / 8 pages</option>
+													<option value="9">2475 words / 9 pages</option>
+													<option value="10">2750 words / 10 pages</option>
+													<option value="11">3025 words / 11 pages</option>
+													<option value="12">3300 words / 12 pages</option>
+													<option value="13">3575 words / 13 pages</option>
+													<option value="14">3850 words / 14 pages</option>
+													<option value="15">4125 words / 15 pages</option>
+													<option value="16">4400 words / 16 pages</option>
+													<option value="17">4675 words / 17 pages</option>
+													<option value="18">4950 words / 18 pages</option>
+													<option value="19">5225 words / 19 pages</option>
+													<option value="20">5500 words / 20 pages</option>
+													<option value="21">5775 words / 21 pages</option>
+													<option value="22">6050 words / 22 pages</option>
+													<option value="23">6325 words / 23 pages</option>
+													<option value="24">6600 words / 24 pages</option>
+													<option value="25">6875 words / 25 pages</option>
+													<option value="26">7150 words / 26 pages</option>
+													<option value="27">7425 words / 27 pages</option>
+													<option value="28">7700 words / 28 pages</option>
+													<option value="29">7975 words / 29 pages</option>
+													<option value="30">8250 words / 30 pages</option>
+													<option value="31">8525 words / 31 pages</option>
+													<option value="32">8800 words / 32 pages</option>
+													<option value="33">9075 words / 33 pages</option>
+													<option value="34">9350 words / 34 pages</option>
+													<option value="35">9625 words / 35 pages</option>
+													<option value="36">9900 words / 36 pages</option>
+													<option value="37">10175 words / 37 pages</option>
+													<option value="38">10450 words / 38 pages</option>
+													<option value="39">10725 words / 39 pages</option>
+													<option value="40">11000 words / 40 pages</option>
+													<option value="41">11275 words / 41 pages</option>
+													<option value="42">11550 words / 42 pages</option>
+													<option value="43">11825 words / 43 pages</option>
+													<option value="44">12100 words / 44 pages</option>
+													<option value="45">12375 words / 45 pages</option>
+													<option value="46">12650 words / 46 pages</option>
+													<option value="47">12925 words / 47 pages</option>
+													<option value="48">13200 words / 48 pages</option>
+													<option value="49">13475 words / 49 pages</option>
+													<option value="50">13750 words / 50 pages</option>
+													<option value="51">14025 words / 51 pages</option>
+													<option value="52">14300 words / 52 pages</option>
+													<option value="53">14575 words / 53 pages</option>
+													<option value="54">14850 words / 54 pages</option>
+													<option value="55">15125 words / 55 pages</option>
+													<option value="56">15400 words / 56 pages</option>
+													<option value="57">15675 words / 57 pages</option>
+													<option value="58">15950 words / 58 pages</option>
+													<option value="59">16225 words / 59 pages</option>
+													<option value="60">16500 words / 60 pages</option>
+													<option value="61">16775 words / 61 pages</option>
+													<option value="62">17050 words / 62 pages</option>
+													<option value="63">17325 words / 63 pages</option>
+													<option value="64">17600 words / 64 pages</option>
+													<option value="65">17875 words / 65 pages</option>
+													<option value="66">18150 words / 66 pages</option>
+													<option value="67">18425 words / 67 pages</option>
+													<option value="68">18700 words / 68 pages</option>
+													<option value="69">18975 words / 69 pages</option>
+													<option value="70">19250 words / 70 pages</option>
+													<option value="71">19525 words / 71 pages</option>
+													<option value="72">19800 words / 72 pages</option>
+													<option value="73">20075 words / 73 pages</option>
+													<option value="74">20350 words / 74 pages</option>
+													<option value="75">20625 words / 75 pages</option>
+													<option value="76">20900 words / 76 pages</option>
+													<option value="77">21175 words / 77 pages</option>
+													<option value="78">21450 words / 78 pages</option>
+													<option value="79">21725 words / 79 pages</option>
+													<option value="80">22000 words / 80 pages</option>
+													<option value="81">22275 words / 81 pages</option>
+													<option value="82">22550 words / 82 pages</option>
+													<option value="83">22825 words / 83 pages</option>
+													<option value="84">23100 words / 84 pages</option>
+													<option value="85">23375 words / 85 pages</option>
+													<option value="86">23650 words / 86 pages</option>
+													<option value="87">23925 words / 87 pages</option>
+													<option value="88">24200 words / 88 pages</option>
+													<option value="89">24475 words / 89 pages</option>
+													<option value="90">24750 words / 90 pages</option>
+													<option value="91">25025 words / 91 pages</option>
+													<option value="92">25300 words / 92 pages</option>
+													<option value="93">25575 words / 93 pages</option>
+													<option value="94">25850 words / 94 pages</option>
+													<option value="95">26125 words / 95 pages</option>
+													<option value="96">26400 words / 96 pages</option>
+													<option value="97">26675 words / 97 pages</option>
+													<option value="98">26950 words / 98 pages</option>
+													<option value="99">27225 words / 99 pages</option>
+													<option value="100">27500 words / 100 pages</option>
+													<option value="101">27775 words / 101 pages</option>
+													<option value="102">28050 words / 102 pages</option>
+													<option value="103">28325 words / 103 pages</option>
+													<option value="104">28600 words / 104 pages</option>
+													<option value="105">28875 words / 105 pages</option>
+													<option value="106">29150 words / 106 pages</option>
+													<option value="107">29425 words / 107 pages</option>
+													<option value="108">29700 words / 108 pages</option>
+													<option value="109">29975 words / 109 pages</option>
+													<option value="110">30250 words / 110 pages</option>
+													<option value="111">30525 words / 111 pages</option>
+													<option value="112">30800 words / 112 pages</option>
+													<option value="113">31075 words / 113 pages</option>
+													<option value="114">31350 words / 114 pages</option>
+													<option value="115">31625 words / 115 pages</option>
+													<option value="116">31900 words / 116 pages</option>
+													<option value="117">32175 words / 117 pages</option>
+													<option value="118">32450 words / 118 pages</option>
+													<option value="119">32725 words / 119 pages</option>
+													<option value="120">33000 words / 120 pages</option>
+													<option value="121">33275 words / 121 pages</option>
+													<option value="122">33550 words / 122 pages</option>
+													<option value="123">33825 words / 123 pages</option>
+													<option value="124">34100 words / 124 pages</option>
+													<option value="125">34375 words / 125 pages</option>
+													<option value="126">34650 words / 126 pages</option>
+													<option value="127">34925 words / 127 pages</option>
+													<option value="128">35200 words / 128 pages</option>
+													<option value="129">35475 words / 129 pages</option>
+													<option value="130">35750 words / 130 pages</option>
+													<option value="131">36025 words / 131 pages</option>
+													<option value="132">36300 words / 132 pages</option>
+													<option value="133">36575 words / 133 pages</option>
+													<option value="134">36850 words / 134 pages</option>
+													<option value="135">37125 words / 135 pages</option>
+													<option value="136">37400 words / 136 pages</option>
+													<option value="137">37675 words / 137 pages</option>
+													<option value="138">37950 words / 138 pages</option>
+													<option value="139">38225 words / 139 pages</option>
+													<option value="140">38500 words / 140 pages</option>
+													<option value="141">38775 words / 141 pages</option>
+													<option value="142">39050 words / 142 pages</option>
+													<option value="143">39325 words / 143 pages</option>
+													<option value="144">39600 words / 144 pages</option>
+													<option value="145">39875 words / 145 pages</option>
+													<option value="146">40150 words / 146 pages</option>
+													<option value="147">40425 words / 147 pages</option>
+													<option value="148">40700 words / 148 pages</option>
+													<option value="149">40975 words / 149 pages</option>
+													<option value="150">41250 words / 150 pages</option>
+													<option value="151">41525 words / 151 pages</option>
+													<option value="152">41800 words / 152 pages</option>
+													<option value="153">42075 words / 153 pages</option>
+													<option value="154">42350 words / 154 pages</option>
+													<option value="155">42625 words / 155 pages</option>
+													<option value="156">42900 words / 156 pages</option>
+													<option value="157">43175 words / 157 pages</option>
+													<option value="158">43450 words / 158 pages</option>
+													<option value="159">43725 words / 159 pages</option>
+													<option value="160">44000 words / 160 pages</option>
+													<option value="161">44275 words / 161 pages</option>
+													<option value="162">44550 words / 162 pages</option>
+													<option value="163">44825 words / 163 pages</option>
+													<option value="164">45100 words / 164 pages</option>
+													<option value="165">45375 words / 165 pages</option>
+													<option value="166">45650 words / 166 pages</option>
+													<option value="167">45925 words / 167 pages</option>
+													<option value="168">46200 words / 168 pages</option>
+													<option value="169">46475 words / 169 pages</option>
+													<option value="170">46750 words / 170 pages</option>
+													<option value="171">47025 words / 171 pages</option>
+													<option value="172">47300 words / 172 pages</option>
+													<option value="173">47575 words / 173 pages</option>
+													<option value="174">47850 words / 174 pages</option>
+													<option value="175">48125 words / 175 pages</option>
+													<option value="176">48400 words / 176 pages</option>
+													<option value="177">48675 words / 177 pages</option>
+													<option value="178">48950 words / 178 pages</option>
+													<option value="179">49225 words / 179 pages</option>
+													<option value="180">49500 words / 180 pages</option>
+													<option value="181">49775 words / 181 pages</option>
+													<option value="182">50050 words / 182 pages</option>
+													<option value="183">50325 words / 183 pages</option>
+													<option value="184">50600 words / 184 pages</option>
+													<option value="185">50875 words / 185 pages</option>
+													<option value="186">51150 words / 186 pages</option>
+													<option value="187">51425 words / 187 pages</option>
+													<option value="188">51700 words / 188 pages</option>
+													<option value="189">51975 words / 189 pages</option>
+													<option value="190">52250 words / 190 pages</option>
+													<option value="191">52525 words / 191 pages</option>
+													<option value="192">52800 words / 192 pages</option>
+													<option value="193">53075 words / 193 pages</option>
+													<option value="194">53350 words / 194 pages</option>
+													<option value="195">53625 words / 195 pages</option>
+													<option value="196">53900 words / 196 pages</option>
+													<option value="197">54175 words / 197 pages</option>
+													<option value="198">54450 words / 198 pages</option>
+													<option value="199">54725 words / 199 pages</option>
+													<option value="200">55000 words / 200 pages</option>
+												</select>
+											</div>
+										</div>
+										<div class='form-group'>
+											<label class='col-md-3'>Spacing</label>
+											<div class='col-md-9'>
+												<select class='form-control' name='cal-spaces' value=''>
+													<option value='Double Spaced'>Double Spaced</option>
+													<option value='Single Spaced'>Single Spaced</option>
+												</select>
+											</div>
+										</div>
+
+										<div class='form-group'>
+											<div class='col-md-12'>
+												<div class='form-info'>
+													Power Point Presentaion [optional] - (1 slide = $5)
+												</div>
+											</div>
+										</div>
+
+										<div class='form-group'>
+											<label class='col-md-3'>No of Slides</label>
+											<div class='col-md-9 '>
+
+
+												<input type='number' name='calc-slides' value='0' class='form-control'
+													min='0' /></div>
+										</div>
+
+
+										<div class='form-group'>
+											<label class='col-md-3'></label>
+											<div class='col-md-9 '>
+
+
+												<input type='hidden' name='calc-price' value='0' class='form-control' />
+											</div>
+										</div>
+
+										<div class='form-group'>
+											<label class='col-md-3'></label>
+											<div class='col-md-9'>
+												<input type='submit' value='Proceed' id='proceed-with-order'
+													class='btn btn-primary' />
+											</div>
+										</div>
+									</form>
+								</div>
+							</div>
+							<div class="dynamic-order-2">
+								<div class="writing-estate-calculator">
+									<span class="back-to-services-options-btn"> <span class="ri ri-arrow-left"></span>
+										Back to Services</span>
+									<center><span
+											style="display: inline-block; font-size: 17px; text-transform: uppercase; font-weight: 700; margin-bottom: 15px;">Other
+											Services</span></center>
+									<form class='form-horizontal' method='post' onsubmit='return false;'>
+										<div class='form-group'>
+											<label class='col-md-0'></label>
+											<div class='col-md-12 '>
+
+
+												<input type='text' name='other-topic' value='' class='form-control'
+													placeholder='Topic' /></div>
+										</div>
+
+
+										<div class='form-group'>
+											<label class='col-md-0'></label>
+											<div class='col-md-12'>
+												<textarea class='form-control' name='other-description'
+													style='min-height: 150px;'
+													placeholder='Write a Description'></textarea>
+											</div>
+										</div>
+										<div class='form-group'>
+											<label class='col-md-0'></label>
+											<div class='col-md-12 '>
+
+
+												<input type='number' name='other-budget' value='' class='form-control'
+													placeholder='Budget in USD ($)' min='1'
+													id='other-services-budget' /></div>
+										</div>
+
+
+										<div class='form-group'>
+											<label class="col-md-0"></label>
+											<div class='col-md-12'>
+												<select class='form-control' name='other-cal-urgency'>
+													<option value="0">-Select Urgency-</option>
+													<option value="6">6 hours</option>
+													<option value="12">12 hours</option>
+													<option value="24">24 hours</option>
+													<option value="36">36 hours</option>
+													<option value="48">48 hours</option>
+													<option value="72">3 days</option>
+													<option value="120">5 days</option>
+													<option value="168">7 days</option>
+													<option value="216">9 days</option>
+													<option value="240">10 days</option>
+													<option value="264">14 days</option>
+													<option value="504">21 days</option>
+													<option value="720">30 days</option>
+													<option value="1440">2 Months</option>
+												</select>
+											</div>
+										</div>
+										<div class='form-group'>
+											<label class='col-md-0'></label>
+											<div class='col-md-12'>
+												<span><span><strong><a href='#' class='file-uploader-init' file-type='0'
+																data-preview='preview-other-services-files'>Upload Your
+																Files</a> [optional]</strong></span><br /><span
+														class='preview-other-services-files'></span></span>
+											</div>
+										</div>
+
+										<div class='form-group'>
+											<label class='col-md-0'></label>
+											<div class='col-md-12'>
+												<input type='submit' value='Proceed' id='other-services-btn'
+													class='btn btn-primary' />
+											</div>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div><!-- close row -->
+		</div>
+	</div><!-- end of the top level -->
+	<div class='container-fluid best-writers'>
+		<div id="" />
+			<div class='container' style="text-align: center;">
+				<h2>Work directly with Some of our EXPERT WRITERS</h2>
+				<div class='row status_cover' id="update_status">
+					<div class='col-md-4'>
+						<div class='card-display'>
+							<div class='grid-box profile-meta-data'>
+								<div class='col-box-4'>
+									<img
+										src='images/fake_profile/60aa302f5e6a51621766191/218b0399e46008235d1a0b683526f8fb.html' />
+								</div>
+								<div class='col-box-8'>
+									<h4>zoe geanopulos</h4>
+									<div class='rating-meta-data'>
+										<button class="btn btn-sm"
+											style="background-color: transparent; color: red; border-color: red; padding: 2px 4px; margin-bottom: 10px;">Offline</button>
+										<span class='user-rating-number'>5.0</span><span
+											class='ri ri-star user-rating-star rating' style='color: #0291DD;'></span><span
+											class='ri ri-star user-rating-star rating' style='color: #0291DD;'></span><span
+											class='ri ri-star user-rating-star rating' style='color: #0291DD;'></span><span
+											class='ri ri-star user-rating-star rating' style='color: #0291DD;'></span><span
+											class='ri ri-star user-rating-star rating' style='color: #0291DD;'></span>
+									</div>
+								</div>
+							</div>
+							<div class='orders-done-meta-data'>
+								<div class='grid-box'>
+									<div class='col-box-6'>
+										<span>Completed 10 Orders</span>
+										<span>Success Rate 5/5</span>
+										<span>Active Writer</span>
+									</div>
+									<div class='col-box-6'>
+										<center>
+											<a href='#' class='hire-special-btn'>Hire Writer</a>
+											<br /><br />
+											<a href='#' class='view-more-writers-detail'>View Profile </a> </center>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div><!-- col-md-4 -->
+					<div class='col-md-4'>
+						<div class='card-display'>
+							<div class='grid-box profile-meta-data'>
+								<div class='col-box-4'>
+									<img
+										src='images/fake_profile/60aa302f5e6a51621766191/218b0399e46008235d1a0b683526f8fb.html' />
+								</div>
+								<div class='col-box-8'>
+									<h4>john wanjiku</h4>
+									<div class='rating-meta-data'>
+										<button class="btn btn-sm"
+											style="background-color: transparent; color: red; border-color: red; padding: 2px 4px; margin-bottom: 10px;">Offline</button>
+										<span class='user-rating-number-0'>0.0</span><span
+											class='ri ri-star user-rating-star rating' style='color: #BEC0C2;'></span><span
+											class='ri ri-star user-rating-star rating' style='color: #BEC0C2;'></span><span
+											class='ri ri-star user-rating-star rating' style='color: #BEC0C2;'></span><span
+											class='ri ri-star user-rating-star rating' style='color: #BEC0C2;'></span><span
+											class='ri ri-star user-rating-star rating' style='color: #BEC0C2;'></span>
+									</div>
+								</div>
+							</div>
+							<div class='orders-done-meta-data'>
+								<div class='grid-box'>
+									<div class='col-box-6'>
+										<span>Completed 10 Orders</span>
+										<span>Success Rate 0/5</span>
+										<span>Active Writer</span>
+									</div>
+									<div class='col-box-6'>
+										<center>
+											<a href='#' class='hire-special-btn'>Hire Writer</a>
+											<br /><br />
+											<a href='#' class='view-more-writers-detail'>View Profile </a> </center>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div><!-- col-md-4 -->
+					<div class='col-md-4'>
+						<div class='card-display'>
+							<div class='grid-box profile-meta-data'>
+								<div class='col-box-4'>
+									<img src='images/fake_profile/60ac53a0d2f641621906336/-1_6906276_0_1_3.html' />
+								</div>
+								<div class='col-box-8'>
+									<h4>maureen Dugire</h4>
+									<div class='rating-meta-data'>
+										<button class="btn btn-sm"
+											style="background-color: transparent; color: red; border-color: red; padding: 2px 4px; margin-bottom: 10px;">Offline</button>
+										<span class='user-rating-number'>4.2</span><span
+											class='ri ri-star user-rating-star rating' style='color: #0291DD;'></span><span
+											class='ri ri-star user-rating-star rating' style='color: #0291DD;'></span><span
+											class='ri ri-star user-rating-star rating' style='color: #0291DD;'></span><span
+											class='ri ri-star user-rating-star rating' style='color: #0291DD;'></span><span
+											class='ri ri-star-half-empty user-rating-star rating'
+											style='color: #0291DD;'></span> </div>
+								</div>
+							</div>
+							<div class='orders-done-meta-data'>
+								<div class='grid-box'>
+									<div class='col-box-6'>
+										<span>Completed 11 Orders</span>
+										<span>Success Rate 4.2/5</span>
+										<span>Active Writer</span>
+									</div>
+									<div class='col-box-6'>
+										<center>
+											<a href='#' class='hire-special-btn'>Hire Writer</a>
+											<br /><br />
+											<a href='#' class='view-more-writers-detail'>View Profile </a> </center>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div><!-- col-md-4 -->
+				</div><!-- ending the row -->
+				<a class="view_more" href="#" style="margin-bottom: 10px;">View More Writers</a>
+			</div>
+	</div>
+	<div class="container-fluid container-const-calculator" style="padding: 50px 0; background: white;">
+		<div class="container">
+			<h2 class="writing-estatte-content-header">Why Writing Errands</h2>
+			<div class="row">
+				<div class="col-md-5">
+					<br />
+					<h3 style="margin-bottom: 20px ;">Simplify Studying With Writing Errands</h3>
+					<div style="font-size: 17px; text-align: center;">Being a student is hard; deadlines and demanding
+						professors don't make it any easier. Our essay writing service helps you reduce academic stress
+						and improve your GPA. All you have to do is select an online essay writer from our team of
+						specialists. We will help you pick a professional writer and never worry about tight deadlines
+						or professor's grades again!</div>
+					<br /><br />
+					<center><a href="#" class="btn- btn-border btn-clear dark-theme" style="padding: 10px 25px;"><span
+								class="ri ri-pencil-square"></span> Simplify Your Study</a></center>
+				</div>
+				<div class="col-md-3">
+					<h3 class="writing-estatte-content-header banner-header">Why Us</h3>
+					<div class='writing-estate-list-view'><span class="ri ri-chevron-right-circle"></span> Favorable
+						Prices</div>
+					<div class='writing-estate-list-view'><span class="ri ri-chevron-right-circle"></span> On-time
+						Delivery</div>
+					<div class='writing-estate-list-view'><span class="ri ri-chevron-right-circle"></span> High Quality
+						Work Delivery</div>
+					<div class='writing-estate-list-view'><span class="ri ri-chevron-right-circle"></span> We offer
+						Discounts</div>
+					<div class='writing-estate-list-view'><span class="ri ri-chevron-right-circle"></span> Free
+						Revisions</div>
+					<div class='writing-estate-list-view'><span class="ri ri-chevron-right-circle"></span> 100%
+						plagiarism-free papers</div>
+				</div>
+				<div class="col-md-4">
+					<div>
+						<img src="images/M.farman-2.png">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container-fluid" style="background: #F0F2F6; padding: 30px 0;">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-6">
+					<div style="background: white; padding: 15px; text-align: center;">
+						<h4>Favorable prices.</h4>
+						Starting from as low as $10 you can get a high quality paper from writingerrands. We handle all
+						types of papers from urgent orders which take less than two hours to long dissertations and
+						research papers. We also offer coupons on referrals. Ours is to create a strong rapport with our
+						customers. We want to help you achieve high quality grades even with your tight budget!
+					</div>
+					<div style="padding: 15px; text-align: center;">
+						<h4>On-time delivery.</h4>
+						One of our core standards in writingerrands is keeping time. Our versatile team of writers can
+						handle long dissertations within a limited amount of time. Do not be surprised if your paper is
+						delivered long before the actual deadline. Quality and speed has enabled us to get this far.
+					</div>
+					<div style="background: white; padding: 15px; text-align: center;">
+						<h4>High quality work.</h4>
+						We strive hard to understand the instructions you give us so that we can deliver a high quality
+						paper depending on your instructions. We handle all types of academic homework starting from
+						mathematics papers to Engineering and computer science papers. We have all types of experts to
+						guide you on the paper you need.
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div style="background: white; padding: 15px; text-align: center;">
+						<h4>We offer discounts</h4>
+						Depending on the amount of papers you post on our platform, we offer discounts. You can even get
+						a 50% off from the normal order cost. We also offer discounts from referrals and for every
+						client you refer to our site we offer you a discount.
+					</div>
+					<div style="padding: 15px; text-align: center;">
+						<h4>100% plagiarism-free papers</h4>
+						We take originality very seriously. We always pass our papers via the best plagiarism tools on
+						the planet. More to that we add references and inside citations for all the papers you give us.
+						We take plagiarism very seriously since we completely understand its consequences. Trust
+						home_page-dataand you shall be sure to get the best services!!
+					</div>
+					<div style="background: white; padding: 15px; text-align: center;">
+						<h4>24/7 support</h4>
+						Our support is available to attend to your needs 24/7.
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class='container-fluid container-main container-third' style="background: #0291DD;">
+		<div class='container'>
+			<div class="row">
+				<div class="col-md-8">
+					<span class="description">
+						Order a custom-written paper of high quality
+						Fast. Easy. Professional.
+					</span><br />
+				</div>
+				<div class="col-md-4">
+					<a href='#' class='btn- btn-border btn-clear dark-theme'>Order Right Away</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class='container-fluid container-main writing-estate-ordering-steps' style="background: #F0F2F6;">
+		<div class='container'>
+			<h3 class='writing-estatte-content-header'>How Writing Errands Works</h3><br /><br />
+			<div class="row">
+				<div class="col-md-3">
+					<div class="step-holder">
+						<span class="step-number">1.</span>
+						<span class="step-title">Place an Ordder</span>
+						<span class="step-description">
+							Place an order by calculating your price, then fill in necessary instructions. We might give
+							you an offer up to 35%. Order first then create an account
+						</span>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="step-holder">
+						<span class="step-number">2.</span>
+						<span class="step-title">Pay</span>
+						<span class="step-description">
+							We have more than one method of payment. Hurry and and select favorable method of payment
+							and get you order delivered on time
+						</span>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="step-holder">
+						<span class="step-number">3.</span>
+						<span class="step-title">Get Solution</span>
+						<span class="step-description">
+							Get a plagiarism free paper. Your order will be available for download on the specified
+							deadline
+						</span>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="step-holder">
+						<span class="step-number">4.</span>
+						<span class="step-title">Review and Approve</span>
+						<span class="step-description">
+							Review your solution. Then approve the order or request for revision.
+						</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class='container-fluid container-main writing-estate-ordering-steps' style="background: white;">
+		<div class='container'>
+			<h3 class='writing-estatte-content-header clr'>Follow our Social Networks for Latest Updates</h3>
+			<br /><br />
+			<div class="row">
+				<div class="col-md-3">
+					<a href="#" class="text-decoration" target="_blank">
+						<div class="step-holder card-container">
+							<div class="d-flex">
+								<img src="css/social_img/youtube.png" alt="youtube logo">
+								<div class="followers">
+									<span class="number">117K</span>
+									<span>followers</span>
+								</div>
+							</div>
+							<span class="step-description text">
+								Boost your essay writing skills through our informative and fun YouTube explainer
+								videos.
+							</span>
+							<p class="follow">Follow <span>></span></p>
+						</div>
+					</a>
+				</div>
+				<div class="col-md-3">
+					<a href="#" class="text-decoration" target="_blank">
+						<div class="step-holder card-container">
+							<div class="d-flex">
+								<img src="css/social_img/twitter.jpg" alt="youtube logo">
+								<div class="followers">
+									<span class="number">125K</span>
+									<span>followers</span>
+								</div>
+							</div>
+							<span class="step-description text">
+								Study tips, learning tricks, and seasonal discounts for our services – it’s all on our
+								Twitter!
+							</span>
+							<p class="follow">Follow <span>></span></p>
+						</div>
+					</a>
+				</div>
+				<div class="col-md-3">
+					<a href="#" class="text-decoration" target="_blank">
+						<div class="step-holder card-container">
+							<div class="d-flex">
+								<img src="css/social_img/fb.png" alt="youtube logo">
+								<div class="followers">
+									<span class="number">107K</span>
+									<span>followers</span>
+								</div>
+							</div>
+							<span class="step-description text">
+								Find excellent study hacks and the freshest student memes on our Facebook page.
+							</span>
+							<p class="follow">Follow <span>></span></p>
+						</div>
+					</a>
+				</div>
+				<div class="col-md-3">
+					<a href="#" class="text-decoration" target="_blank">
+						<div class="step-holder card-container">
+							<div class="d-flex">
+								<img src="css/social_img/instagram.svg" alt="youtube logo">
+								<div class="followers">
+									<span class="number">118K</span>
+									<span>followers</span>
+								</div>
+							</div>
+							<span class="step-description text">
+								Find excellent study hacks and the freshest student memes on our Instagram.
+							</span>
+							<p class="follow">Follow <span>></span></p>
+						</div>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="footer">
+		<div class="wrapper">
+			<div class="w-layout-grid footer-grid">
+				<div id="w-node-_70d8ac6c-2285-3673-8445-13757b35872a-7b358727" class="footer-top cycle"><span
+						class="footer-brand w-nav-brand w--current">
+						<h1>Home Page</h1>
+					</span>
+					<div class="footer-lang">
+						<a href="#" class="app-link-2 h-l w-inline-block"><img
+								src="https://assets.website-files.com/5e5d4354e4bb2065e7524459/5e5fbabfa7ed264a7df67829_132.svg"
+								width="155" height="50" loading="lazy" alt="" class="image-8"></a>
+					</div>
+				</div>
+				<div id="w-node-_70d8ac6c-2285-3673-8445-13757b358739-7b358727" class="footer-v1-column">
+					<div class="footer_h">Legal</div>
+					<div class="h-l w-embed"><a href="#" class="h-l" aria-label="facebook">Terms And Conditions</a>
+					</div>
+					<div class="h-l w-embed"><a href="#" class="h-l" aria-label="facebook">Refund Policy</a></div>
+					<div class="h-l w-embed"><a href="#" class="h-l" aria-label="facebook">Payments Policy</a></div>
+					<div class="h-l w-embed"><a href="#" class="h-l" aria-label="facebook">Plagiarism Policy</a></div>
+				</div>
+				<div id="w-node-_70d8ac6c-2285-3673-8445-13757b35872e-7b358727" class="footer-v1-column">
+					<div class="footer_h">Other</div><a href="#" class="footer-link">Become A Writer</a>
+					<div class="h-l w-embed"><a href="contact-us.html" class="h-l" aria-label="facebook">Contact Us</a>
+					</div><a href="#" rel="nofollow" class="footer-link">FAQ</a>
+				</div>
+				<div id="w-node-c66bd37a-3bbe-0a10-efe0-f059b25892d9-7b358727" class="footer-v1-column">
+					<div class="footer_h">How Our Service is Used:</div>
+					<div>WritingErrands essays are NOT intended to be forwarded as finalized work as it is only strictly
+						meant to be used for research and study purposes. WritingErrands does not endorse or condone any
+						type of plagiarism.</div>
+				</div>
+				<div id="w-node-_70d8ac6c-2285-3673-8445-13757b358753-7b358727" class="footer-v1-column">
+					<div class="footer-heading">Subscribe</div>
+					<div class="subscribe-container w-embed">
+						<div class="lightbox__input-group sendgrid-subscription-widget widget-1297"
+							data-emailerror="Please enter a valid email address" data-nameerror="Please enter your name"
+							data-checkboxerror="Please tick the box to accept our conditions">
+							<div class="sg-response"></div>
+							<!-- <div class="col-md-12 col-lg-3 col-12 col-sm-12"></div> -->
+							<form class="form-small sg-widget" data-token="0e6014fe81092ca6289710511990ee97"
+								onsubmit="return false;">
+								<input class="form-small-input sg_email" type="email" name="sg_email"
+									placeholder="Your email address" required="required">
+								<button class="button small-form-arrow-button sg-submit-btn" type="submit"
+									id="widget-1297">
+									<i class="fas fa-arrow-right" style="font-size: 15px; color: white;"></i>
+								</button>
+							</form>
+						</div>
+					</div>
+					<div class="form-info">
+						<div>No Spam</div>
+					</div><img
+						src="https://assets.website-files.com/5e5d4354e4bb2065e7524459/5e6b9cd665535a3422f5a6cb_new.svg"
+						width="344" height="44" loading="lazy" alt="" class="image-2">
+				</div>
+			</div>
+			<div class="w-layout-grid top_nav_footer">
+				<div id="w-node-_471088f0-95fe-8737-3927-e92ebdfb48b0-7b358727" class="footer-v1-column cycle"><a
+						href="#" class="ft_link">college essay help</a><a href="#" class="ft_link">Best Essay Editor</a>
+				</div>
+				<div id="w-node-_617a078b-c15c-d5f7-48de-6803bb29c0f3-7b358727" class="footer-v1-column cycle"><a
+						href="#" class="ft_link">Professional Essay Help</a><a href="#" class="ft_link">Custom Essay
+						Writing</a></div>
+				<div id="w-node-_2f02a46d-5323-e12c-570a-37552eef22a0-7b358727" class="footer-v1-column cycle"><a
+						href="#" class="ft_link">Buy Essay</a><a href="#" class="ft_link">custom dissertation writing
+						service</a></div>
+				<div id="w-node-d7131d36-e7c9-85cc-bbb0-fa79f12cd55c-7b358727" class="footer-v1-column cycle"><a
+						href="#" class="ft_link">Rewrite My Essay</a><a href="#" class="ft_link">Blog</a></div>
+			</div>
+
+		</div>
+	</div>
+	<style>
+	.best-writers{
+		padding: 0px;
+		margin: 0px;
+		color: black;
+	}
+
+	#gradient
+	{
+		width: 100%;
+		min-height: 400px;
+		padding: 0px;
+		margin: 0px;
+		box-shadow: inset 0 0 200px hsla(0,0%,0%,.4);
+
+	}
+
+
+
+	</style>
+
+	<script>
+		$(document).ready(function () {
+			$(".owl-carousel").owlCarousel();
+			// $(window).scroll(function() {
+			// 	if (this.scrollY > 125) {
+			// 		$(".navbar").addClass("active-nav");
+			// 	} else {
+			// 		$(".navbar").removeClass("active-nav");
+			// 	}
+			// })
+			$('.owl-carousel').owlCarousel({
+				loop: true,
+				margin: 10,
+				responsiveClass: true,
+				autoplay: true,
+				dots: true,
+				nav: true,
+				responsive: {
+					0: {
+						items: 1
+					},
+					600: {
+						items: 2
+					},
+					1000: {
+						items: 3
+					}
+				}
+			});
+		});
+	</script>
+
+
+
+
+
+
+
+<!-- =========Animation Background Code=========== -->
+
+
+	<script>
+		
+var colors = new Array(
+  [62,35,255],
+  [60,255,60],
+  [255,35,98],
+  [45,175,230],
+  [255,0,255],
+  [255,128,0]);
+
+var step = 0;
+//color table indices for: 
+// current color left
+// next color left
+// current color right
+// next color right
+var colorIndices = [0,1,2,3];
+
+//transition speed
+var gradientSpeed = .0015;
+
+function updateGradient()
+{
+var c0_0 = colors[colorIndices[0]];
+var c0_1 = colors[colorIndices[1]];
+var c1_0 = colors[colorIndices[2]];
+var c1_1 = colors[colorIndices[3]];
+
+var istep = 1 - step;
+var r1 = Math.round(istep * c0_0[0] + step * c0_1[0]);
+var g1 = Math.round(istep * c0_0[1] + step * c0_1[1]);
+var b1 = Math.round(istep * c0_0[2] + step * c0_1[2]);
+var color1 = "#"+((r1 << 16) | (g1 << 8) | b1).toString(16);
+
+var r2 = Math.round(istep * c1_0[0] + step * c1_1[0]);
+var g2 = Math.round(istep * c1_0[1] + step * c1_1[1]);
+var b2 = Math.round(istep * c1_0[2] + step * c1_1[2]);
+var color2 = "#"+((r2 << 16) | (g2 << 8) | b2).toString(16);
+
+$('#gradient').css({
+   
+   
+   background: "-webkit-radial-gradient(center, circle cover, "+color1+","+color2+")"});
+  
+  step += gradientSpeed;
+  if ( step >= 1 )
+  {
+    step %= 1;
+    colorIndices[0] = colorIndices[1];
+    colorIndices[2] = colorIndices[3];
+    
+    //pick two new target color indices
+    //do not pick the same as the current one
+    colorIndices[1] = ( colorIndices[1] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
+    colorIndices[3] = ( colorIndices[3] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
+    
+  }
+}
+
+setInterval(updateGradient,10);
+	</script>
+</body>
+
+</html>
